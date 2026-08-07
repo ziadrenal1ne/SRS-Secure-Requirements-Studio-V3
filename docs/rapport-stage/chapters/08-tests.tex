@@ -1,0 +1,35 @@
+\chapter{Tests}
+
+\section{Tests fonctionnels}
+Le backend est couvert par une suite de tests automatisés (\texttt{pytest},
+\texttt{pytest-asyncio}) exécutée contre une base SQLite en mémoire, couvrant notamment~:
+la création et le cycle de vie des projets, l'amorçage automatique du Knowledge Graph,
+le déroulement complet d'un entretien, la génération des exigences, l'analyse de
+sécurité, le moteur de revue et la génération documentaire multi-formats.
+
+\TODO{Indiquer le nombre exact de tests et le taux de couverture au moment de la
+rédaction finale du rapport (à régénérer via \texttt{pytest --cov} juste avant la
+remise).}
+
+\section{Tests d'intégration}
+Les tests d'API exercent les endpoints HTTP de bout en bout via un client de test
+asynchrone, garantissant que les routes, les schémas Pydantic et les services métier
+restent cohérents entre eux.
+
+\section{Tests de sécurité}
+Le moteur de sécurité est testé sur des cas explicites~: absence de fabrication d'une
+base légale de traitement des données non confirmée, cohérence entre les acteurs
+déclarés dans les exigences et la matrice RBAC générée, et non-duplication d'une
+analyse de sécurité déjà exécutée pour un même projet.
+
+\section{Tests de génération documentaire}
+Le générateur de documents est testé pour garantir qu'un projet fraîchement créé (sans
+réponse d'entretien) ne produit \textbf{aucune donnée fabriquée}~: dictionnaire de
+données vide, absence d'analyse de sécurité tant qu'elle n'a pas été exécutée, et
+mention explicite des sections volontairement non générées (diagrammes BPMN, maquettes
+visuelles).
+
+\section{Tests de l'assistant IA}
+\TODO{Décrire les tests spécifiques à l'assistant IA (longueur des questions, respect
+du périmètre du projet, gestion des erreurs de connexion au fournisseur) une fois
+formalisés et automatisés.}

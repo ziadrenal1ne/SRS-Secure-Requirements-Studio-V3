@@ -1,0 +1,138 @@
+\documentclass[a4paper,12pt]{report}
+
+% -----------------------------------------------------------------------
+% Rapport de stage / PFA — structure inspirée d'un rapport EMSI, adaptée
+% au sujet : « Conception d'une Plateforme de Gestion des Bénéficiaires
+% de l'Axe Économie Sociale et Solidaire au sein de la Fondation OCP en
+% intégrant des Exigences de Cybersécurité ».
+%
+% IMPORTANT : ce rapport documente le développement de Secure
+% Requirements Studio (l'outil d'ingénierie des exigences) et son
+% rapport avec le projet cible (la future plateforme bénéficiaires).
+% Il ne prétend pas que la plateforme bénéficiaires a été implémentée.
+% Toute information non disponible est marquée [À COMPLÉTER] plutôt
+% qu'inventée.
+% -----------------------------------------------------------------------
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tocbibind}
+
+\hypersetup{
+    colorlinks=true,
+    linkcolor=black,
+    citecolor=black,
+    urlcolor=blue,
+    pdftitle={Conception d'une Plateforme de Gestion des Bénéficiaires - Fondation OCP},
+}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!10},
+    extendedchars=true,
+    literate=
+        {é}{{\'e}}1 {è}{{\`e}}1 {à}{{\`a}}1 {ç}{{\c c}}1
+        {â}{{\^a}}1 {î}{{\^i}}1 {ô}{{\^o}}1 {ê}{{\^e}}1
+        {û}{{\^u}}1 {ù}{{\`u}}1 {É}{{\'E}}1 {È}{{\`E}}1
+        {À}{{\`A}}1 {Ç}{{\c C}}1 {—}{{--}}1,
+}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{Rapport de stage / PFA}
+\fancyhead[R]{\leftmark}
+\fancyfoot[C]{\thepage}
+
+\newcommand{\TODO}[1]{\textcolor{red}{\textbf{[À COMPLÉTER : #1]}}}
+
+\begin{document}
+
+% ------------------------- Page de garde -------------------------------
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    {\large \TODO{Nom de l'école / logo EMSI}}\\[1.5cm]
+    {\Large \textbf{Rapport de Stage / Projet de Fin d'Année (PFA)}}\\[1cm]
+    \rule{\linewidth}{0.5pt}\\[0.5cm]
+    {\LARGE \textbf{Conception d'une Plateforme de Gestion des Bénéficiaires\\
+    de l'Axe Économie Sociale et Solidaire au sein de la\\
+    Fondation OCP en intégrant des Exigences de Cybersécurité}}\\[0.5cm]
+    \rule{\linewidth}{0.5pt}\\[1.5cm]
+
+    {\large Réalisé par~: \TODO{Nom(s) de l'étudiant(e)}}\\[0.5cm]
+    {\large Encadrant académique~: \TODO{Nom de l'encadrant EMSI}}\\[0.3cm]
+    {\large Encadrant professionnel (Fondation OCP)~: \TODO{Nom de l'encadrant OCP}}\\[1.5cm]
+
+    {\large Année universitaire~: \TODO{20XX/20XX}}\\[2cm]
+
+    \vfill
+    {\large Fondation OCP — \TODO{Direction / Axe Économie Sociale et Solidaire}}
+\end{titlepage}
+
+\pagenumbering{roman}
+
+% ------------------------- Remerciements -------------------------------
+\chapter*{Remerciements}
+\addcontentsline{toc}{chapter}{Remerciements}
+\TODO{Remerciements personnalisés envers l'encadrant académique, l'encadrant professionnel, l'équipe d'accueil, etc.}
+
+% ------------------------- Résumé / Abstract ----------------------------
+\chapter*{Résumé}
+\addcontentsline{toc}{chapter}{Résumé}
+Ce rapport documente la réalisation de \textbf{Secure Requirements Studio (SRS)}, un outil interne
+d'ingénierie des exigences conçu pour cadrer, spécifier et sécuriser le projet de
+Plateforme de Gestion des Bénéficiaires de l'Axe Économie Sociale et Solidaire de la
+Fondation OCP. Le stage s'est concentré sur la conception et le développement de SRS
+lui-même — un entretien structuré (assisté par IA ou en questionnaire classique) qui
+transforme les réponses des parties prenantes en un Cahier des Charges, une conception
+applicative, un diagramme de conception MVP et des exigences de cybersécurité
+directement traçables aux réponses collectées. \TODO{Compléter avec les résultats
+quantitatifs obtenus et les limites précises constatées.}
+
+\textbf{Mots-clés~:} ingénierie des exigences, cybersécurité, Fondation OCP, économie
+sociale et solidaire, cahier des charges, intelligence artificielle.
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+\TODO{Traduction anglaise du résumé.}
+
+\tableofcontents
+\listoffigures
+\listoftables
+
+\clearpage
+\pagenumbering{arabic}
+
+% -------------------------------------------------------------------
+\input{chapters/01-introduction.tex}
+\input{chapters/02-presentation-ocp.tex}
+\input{chapters/03-contexte-problematique.tex}
+\input{chapters/04-analyse-conception.tex}
+\input{chapters/05-realisation-srs.tex}
+\input{chapters/06-ia-assistance.tex}
+\input{chapters/07-cybersecurite.tex}
+\input{chapters/08-tests.tex}
+\input{chapters/09-resultats.tex}
+\input{chapters/10-conclusion.tex}
+
+% -------------------------------------------------------------------
+\appendix
+\input{chapters/annexe-a-glossaire.tex}
+\input{chapters/annexe-b-bibliographie.tex}
+\input{chapters/annexe-c-installation.tex}
+\input{chapters/annexe-d-technique.tex}
+
+\end{document}

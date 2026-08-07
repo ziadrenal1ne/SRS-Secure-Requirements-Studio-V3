@@ -1,0 +1,50 @@
+\chapter{Annexes techniques}
+
+\section{Arborescence simplifiée du backend}
+\begin{lstlisting}
+backend/app/
+  routers/       endpoints HTTP (projects, interview, knowledge-graph,
+                 requirements, security, review, documents, ai-settings)
+  services/      logique métier (interview, knowledge_graph, requirement,
+                 security_engine, review_engine, document_generator,
+                 document_rendering, llm_client, ai_settings)
+  repositories/  accès aux données (une classe par entité)
+  models/        entités SQLAlchemy
+  schemas/       schémas Pydantic (validation / sérialisation API)
+  domain/        connaissances métier statiques (catalogue de concepts,
+                 types d'exigences, référentiels de sécurité, savoir FOCP)
+\end{lstlisting}
+
+\section{Exemple d'exigence générée}
+Extrait illustratif de la structure d'une exigence générée par SRS (les valeurs sont
+indicatives)~:
+
+\begin{lstlisting}
+{
+  "requirement_key": "SEC-VAL-001",
+  "requirement_type": "security",
+  "title": "Validation des donnees par un role autorise",
+  "priority": "haute",
+  "source_concept_key": "workflows.monthly_validation",
+  "acceptance_criteria": [
+    "Seuls les roles autorises peuvent valider une soumission mensuelle."
+  ]
+}
+\end{lstlisting}
+
+\section{Exemple de diagramme MVP (Mermaid)}
+Extrait illustratif du diagramme de conception MVP généré dynamiquement (structure
+simplifiée — le contenu réel dépend des exigences confirmées pour chaque projet)~:
+
+\begin{lstlisting}
+flowchart TD
+    A0["Administrateur"] --> FE["Frontend"]
+    A1["Coordinateur regional"] --> FE
+    FE --> API["Backend / API"]
+    API --> M0["Exigences fonctionnelles"]
+    M0 --> DB[(Base de donnees)]
+    API --> SEC["Controles de securite (RBAC, audit, chiffrement)"]
+\end{lstlisting}
+
+\TODO{Remplacer ces extraits par des exemples réels générés pour le projet Fondation
+OCP, une fois un entretien complet mené et un cahier des charges effectivement exporté.}

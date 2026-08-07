@@ -1,0 +1,47 @@
+[tool.poetry]
+name = "srs-backend"
+version = "0.1.0"
+description = "Secure Requirements Studio — FastAPI backend"
+authors = ["Fondation OCP DTD"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.115.0"
+uvicorn = {extras = ["standard"], version = "^0.32.0"}
+sqlalchemy = "^2.0.36"
+alembic = "^1.13.3"
+asyncpg = "^0.30.0"
+aiosqlite = "^0.20.0"
+pydantic = "^2.9.2"
+pydantic-settings = "^2.6.0"
+python-multipart = "^0.0.12"
+redis = "^5.2.0"
+celery = "^5.4.0"
+prometheus-client = "^0.21.0"
+structlog = "^24.4.0"
+tenacity = "^9.0.0"
+httpx = "^0.27.2"
+python-docx = "^1.1.2"
+reportlab = "^4.2.5"
+markdown2 = "^2.5.1"
+google-genai = "^1.0.0"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.3"
+pytest-asyncio = "^0.24.0"
+httpx = "^0.27.2"
+pytest-cov = "^6.0.0"
+ruff = "^0.7.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"

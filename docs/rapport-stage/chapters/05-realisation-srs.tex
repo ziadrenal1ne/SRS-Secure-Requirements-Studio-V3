@@ -1,0 +1,64 @@
+\chapter{Réalisation de Secure Requirements Studio}
+
+\section{Environnement de développement}
+\begin{itemize}
+    \item Backend~: Python 3.12, FastAPI, Poetry pour la gestion des dépendances.
+    \item Frontend~: Node.js, Next.js 15, TypeScript.
+    \item Éditeur~: \TODO{VS Code / autre, selon l'environnement réellement utilisé}.
+    \item Gestion de version~: Git. \TODO{Préciser l'hébergement du dépôt (interne,
+    GitHub, GitLab...) et la politique de branches si applicable.}
+\end{itemize}
+
+\section{Architecture de Secure Requirements Studio}
+Le backend est organisé en couches~: \texttt{routers} (endpoints HTTP), \texttt{services}
+(logique métier des différents moteurs), \texttt{repositories} (accès aux données),
+\texttt{models} (entités SQLAlchemy) et \texttt{domain} (connaissances métier statiques,
+telles que le catalogue de concepts et les référentiels de sécurité).
+
+\section{Questionnaire guidé}
+Le \emph{Classic Questionnaire} permet de mener un entretien complet sans dépendre d'un
+fournisseur d'IA~: chaque question est associée à un domaine du Knowledge Graph, avec
+suivi automatique de la complétude et des dépendances entre concepts (par exemple, une
+question sur le RBAC régional n'est posée qu'après confirmation du regroupement des
+coopératives par région).
+
+\section{Entretien assisté par IA}
+En mode assisté, l'IA joue le rôle d'un consultant senior en ingénierie des exigences~:
+questions courtes et précises en français, pas de répétition d'une question déjà posée
+sous la même forme, et restriction stricte au périmètre du projet cadré. Toute question
+hors périmètre reçoit une réponse de recentrage plutôt qu'une réponse de chatbot
+généraliste.
+
+\section{Intégration des fournisseurs IA}
+\TODO{Décrire précisément, au moment de la rédaction finale, les fournisseurs IA
+effectivement intégrés et testés (Gemini confirmé dans le code ; les autres
+fournisseurs mentionnés dans les spécifications initiales — OpenAI, Anthropic Claude,
+Kimi, Ollama — ne doivent être décrits comme livrés que s'ils ont réellement été
+implémentés et testés au moment de la rédaction).}
+
+\section{Génération dynamique des exigences}
+Chaque réponse suffisamment complète déclenche la génération d'exigences typées
+(fonctionnelle, non fonctionnelle, sécurité, technique, etc.), chacune associée à une
+clé unique, un identifiant du concept source (\texttt{source\_concept\_key}), une
+priorité et un statut — garantissant la traçabilité entre une exigence et la réponse
+qui l'a produite.
+
+\section{Génération du Cahier des Charges}
+Le Cahier des Charges est assemblé automatiquement à partir de l'état courant du
+Knowledge Graph et des exigences générées, avec pour contrainte de rester concis
+(3 à 5~pages) plutôt que de reproduire un document générique volumineux.
+
+\section{Génération de la conception}
+La conception applicative de haut niveau (architecture, acteurs, modules,
+flux principaux) est dérivée du même modèle de données que le Cahier des Charges,
+garantissant la cohérence entre les deux documents.
+
+\section{Génération du diagramme MVP}
+Voir section~4.7 pour le détail du principe de génération du diagramme unique de
+conception MVP.
+
+\section{Génération des documents}
+Les formats d'export pris en charge sont~: JSON (données machine), Markdown (source de
+vérité textuelle), HTML (dérivé du Markdown), DOCX et PDF (générés directement à partir
+du modèle de contenu structuré, pour garantir une mise en forme fiable indépendamment de
+la conversion Markdown).

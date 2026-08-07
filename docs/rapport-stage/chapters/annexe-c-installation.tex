@@ -1,0 +1,57 @@
+\chapter{Guide d'installation}
+
+\section{Prérequis}
+\begin{itemize}
+    \item Python~3.12 et Poetry (backend).
+    \item Node.js (frontend Next.js).
+    \item Docker et Docker Compose (base de données PostgreSQL et Redis).
+\end{itemize}
+
+\section{Démarrage rapide}
+Le dépôt fournit des scripts de démarrage prêts à l'emploi~:
+\begin{itemize}
+    \item \texttt{run.bat} / \texttt{run.ps1} — Windows.
+    \item \texttt{run} / \texttt{runlinux} — Linux / macOS / WSL.
+\end{itemize}
+
+Ces scripts vérifient la présence d'un fichier \texttt{backend/.env} (le créent à partir
+de \texttt{.env.example} si absent), démarrent les services d'infrastructure via
+\texttt{docker-compose.yml} (PostgreSQL, Redis), lancent le backend FastAPI puis le
+frontend Next.js, et affichent les URLs locales.
+
+\section{Configuration}
+Les variables d'environnement sensibles (clés API des fournisseurs IA, chaîne de
+connexion à la base de données) sont définies dans \texttt{backend/.env}, jamais
+committées dans le dépôt Git — seul \texttt{backend/.env.example} y figure, sans valeur
+réelle.
+
+\section{Lancement manuel (sans script)}
+\begin{lstlisting}[language=bash]
+# Infrastructure (Postgres + Redis)
+docker compose up -d
+
+# Backend
+cd backend
+poetry install
+poetry run uvicorn app.main:app --reload
+
+# Frontend (dans un autre terminal)
+cd frontend
+npm install
+npm run dev
+\end{lstlisting}
+
+\section{Tests}
+\begin{lstlisting}[language=bash]
+# Backend
+cd backend
+poetry run pytest
+
+# Frontend
+cd frontend
+npx tsc --noEmit
+npm run build
+\end{lstlisting}
+
+\TODO{Mettre à jour cette annexe si la procédure de déploiement change avant la remise
+finale du rapport (voir également DEPLOYMENT.md à la racine du dépôt, si présent).}

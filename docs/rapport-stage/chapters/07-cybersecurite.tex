@@ -1,0 +1,51 @@
+\chapter{Cybersécurité}
+
+La cybersécurité est un axe central du projet, tant dans l'outil SRS lui-même que dans
+les exigences qu'il génère pour la future plateforme.
+
+\section{Modèle de menace}
+Le moteur de sécurité de SRS applique une analyse de type \textbf{STRIDE} (Spoofing,
+Tampering, Repudiation, Information disclosure, Denial of service, Elevation of
+privilege), pondérée selon une logique \textbf{DREAD}, sur un catalogue de concepts
+prioritaires du Knowledge Graph (authentification, autorisation, protection des
+données, disponibilité, etc.).
+
+\section{Analyse des risques}
+Pour chaque risque identifié, un registre structuré est généré, incluant~: identifiant,
+actif concerné, menace, vulnérabilité, impact, probabilité, niveau de risque,
+mitigation proposée et risque résiduel. Seuls les risques dont le niveau est
+\emph{élevé} ou \emph{critique} apparaissent dans le registre final, afin de ne pas
+diluer l'attention sur des risques mineurs.
+
+\section{Contrôle d'accès}
+Une matrice RBAC (Role-Based Access Control) est générée à partir des acteurs
+effectivement identifiés dans les exigences fonctionnelles — elle n'est donc pas fixe,
+mais reflète les rôles confirmés durant l'entretien (par exemple~: administrateur,
+coordinateur régional, représentant de coopérative).
+
+\section{Protection des données}
+Une analyse d'impact relative à la protection des données (PIA) est générée, avec une
+règle stricte~: les exigences légales telles que la Loi~09-08 ou le RGPD ne sont
+\textbf{jamais} présentées comme confirmées par défaut. Elles sont systématiquement
+étiquetées comme « à confirmer avec le responsable juridique / DPO », sauf confirmation
+explicite d'une partie prenante durant l'entretien.
+
+\section{Sécurité des fichiers}
+\TODO{Détailler les contrôles de sécurité relatifs au téléversement de fichiers
+(validation de type, taille, scan antivirus) une fois ces exigences confirmées pour un
+projet concret — ne pas décrire de contrôles qui ne sont pas encore documentés.}
+
+\section{Journalisation et traçabilité}
+Chaque exigence générée référence la réponse d'entretien dont elle est issue
+(\texttt{source\_concept\_key}), fournissant une traçabilité de bout en bout entre une
+exigence du Cahier des Charges et la réponse de la partie prenante qui l'a motivée.
+
+\section{Sauvegarde et continuité}
+\TODO{Documenter la stratégie de sauvegarde et de continuité effectivement retenue pour
+l'environnement d'hébergement de SRS, une fois le déploiement finalisé.}
+
+\section{Secure SDLC}
+Le développement de SRS applique des pratiques de cycle de développement sécurisé de
+base~: séparation stricte de la configuration sensible (clés API) via variables
+d'environnement, absence de journalisation des secrets, et couverture par tests
+automatisés des principaux flux applicatifs (voir chapitre~8).

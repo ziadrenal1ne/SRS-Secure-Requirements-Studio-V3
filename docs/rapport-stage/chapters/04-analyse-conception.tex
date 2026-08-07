@@ -1,0 +1,105 @@
+\chapter{Analyse et conception}
+
+\section{Étude de l'existant}
+\TODO{Décrire les outils/processus existants avant SRS pour le cadrage de projets
+similaires au sein de la Fondation OCP, si une étude a été menée. Sinon, indiquer
+explicitement qu'aucune étude formelle de l'existant n'a été réalisée dans le cadre de
+ce stage.}
+
+\section{Analyse des besoins}
+Les besoins ont été structurés autour d'un modèle de spécification centralisé (le
+\emph{Knowledge Graph}), qui organise les réponses de l'entretien par domaine~:
+parties prenantes, utilisateurs, coopératives, bénéficiaires, exigences fonctionnelles,
+règles métier, workflows, documents, KPI, ODD, ESG, sécurité, données, intégrations,
+architecture, infrastructure, notifications, reporting, tests et déploiement.
+
+\section{Acteurs et rôles}
+\begin{itemize}
+    \item \textbf{Administrateur / consultant SRS} — mène l'entretien de cadrage.
+    \item \textbf{Partie prenante interrogée} — représentant métier de la Fondation OCP
+    ou de l'Axe Économie Sociale et Solidaire.
+    \item \textbf{Équipe de développement (destinataire des livrables)} — reprend le
+    Cahier des Charges et la conception pour développer la future plateforme.
+\end{itemize}
+
+\section{Fonctionnalités principales de SRS}
+\begin{itemize}
+    \item Entretien structuré (Classic Questionnaire hors ligne ou IA adaptative).
+    \item Moteur de Knowledge Graph avec suivi de complétude et de dépendances entre
+    concepts.
+    \item Moteur de génération d'exigences (fonctionnelles, non fonctionnelles,
+    sécurité, techniques).
+    \item Moteur d'analyse de sécurité (score de sécurité, checklist, matrice RBAC,
+    registre des risques, analyse d'impact vie privée).
+    \item Moteur de revue (règles de complétude avant export final).
+    \item Générateur de documents multi-formats (JSON, Markdown, HTML, DOCX, PDF).
+\end{itemize}
+
+\section{Architecture générale}
+SRS suit une architecture classique en trois couches~:
+
+\begin{itemize}
+    \item \textbf{Frontend} — application Next.js (React) assurant l'assistant
+    d'entretien, les tableaux de bord et la consultation des livrables générés.
+    \item \textbf{Backend} — API FastAPI (Python) exposant les routes projet, entretien,
+    knowledge graph, exigences, sécurité, revue et documents.
+    \item \textbf{Base de données} — PostgreSQL en production (SQLite en environnement
+    de test), via SQLAlchemy asynchrone.
+\end{itemize}
+
+Il n'existe volontairement \textbf{aucune couche d'authentification} dans SRS~: chaque
+projet appartient à un contexte interne unique (« Fondation OCP »), l'outil étant destiné
+à un usage interne restreint pendant la phase de cadrage plutôt qu'à un accès multi-
+organisation.
+
+\section{Conception de la solution}
+La conception distingue explicitement, à chaque étape de la génération documentaire~:
+les informations \emph{confirmées} par une réponse d'entretien, les
+\emph{hypothèses} formulées par le système, et les points \emph{à confirmer} avec les
+parties prenantes concernées (par exemple les exigences légales/RGPD ou Loi~09-08, qui
+sont systématiquement étiquetées comme à valider avec le responsable juridique/DPO).
+
+\section{Diagramme de conception du MVP}
+Conformément au principe « un seul diagramme de conception MVP compréhensible par des
+publics techniques et non techniques », SRS génère dynamiquement un diagramme unique
+(format Mermaid) représentant les acteurs, le frontend, le backend, les modules
+effectivement justifiés par les exigences confirmées, la base de données, et les
+contrôles de sécurité applicables — sans ajout systématique de briques non justifiées
+(microservices, Kubernetes, files de messages, etc.).
+
+\begin{figure}[h]
+    \centering
+    \TODO{Insérer une capture d'écran ou un rendu du diagramme MVP généré pour un
+    projet réel, une fois disponible.}
+    \caption{Exemple de diagramme de conception MVP généré par SRS}
+\end{figure}
+
+\section{Flux principaux}
+\subsection{Flux d'entretien}
+Démarrage de session → question adaptative ou issue du catalogue de concepts →
+interprétation de la réponse → mise à jour du Knowledge Graph → génération incrémentale
+des exigences associées → question suivante ou fin d'entretien.
+
+\subsection{Flux de génération documentaire}
+Sur demande, le générateur de documents assemble le contenu à partir de l'état courant
+du Knowledge Graph, des exigences et — si disponible — de l'analyse de sécurité, puis
+l'exporte dans le format demandé (JSON, Markdown, HTML, DOCX, PDF).
+
+\subsection{Flux de revue}
+Avant export final, le moteur de revue vérifie la complétude (parties prenantes,
+exigences, sécurité, architecture, tests) et distingue les éléments confirmés, supposés
+et restant à confirmer.
+
+\section{Choix technologiques}
+\begin{longtable}{|l|l|}
+\hline
+\textbf{Composant} & \textbf{Technologie} \\
+\hline
+Backend & FastAPI, SQLAlchemy (async), Alembic \\
+Base de données & PostgreSQL (prod), SQLite (tests) \\
+Frontend & Next.js, React, Tailwind CSS \\
+IA (entretien adaptatif) & Google Gemini, via une abstraction de client IA \\
+Export documentaire & python-docx, ReportLab, markdown2 \\
+Tests backend & pytest, pytest-asyncio \\
+\hline
+\end{longtable}

@@ -1,0 +1,48 @@
+\chapter{Intelligence artificielle et assistance à l'analyse}
+
+\section{Objectif de l'assistant IA}
+L'assistant IA n'est pas le produit final de SRS~: c'est un intervieweur intelligent
+dont le rôle est de collecter des informations. Le produit réel est la transformation
+des réponses de l'entretien en modèle de projet structuré, puis en exigences, en
+architecture et en documents.
+
+\section{Fonctionnement de l'entretien intelligent}
+À chaque tour, l'IA reçoit un contexte structuré (concept courant, historique des
+échanges, informations déjà connues, informations manquantes) plutôt qu'une simple
+conversation non structurée, afin de générer une question courte, précise et non
+redondante.
+
+\section{Gestion du contexte}
+Le contexte transmis à l'IA distingue explicitement les informations connues du projet,
+les hypothèses, et les questions nécessitant une confirmation — évitant que l'IA
+présente une supposition comme un fait acquis.
+
+\section{Restrictions du domaine de l'IA}
+L'IA est strictement cantonnée aux sujets liés au cadrage de la plateforme (besoins,
+architecture, données, sécurité, déploiement, tests). Toute question hors périmètre
+reçoit un message de recentrage explicite plutôt qu'une réponse de chatbot généraliste.
+
+\section{Gestion des fournisseurs IA}
+Le client IA est conçu derrière une interface (\texttt{AIClient}) découplée du reste de
+l'application, afin de pouvoir ajouter ou remplacer un fournisseur sans modifier le
+moteur d'entretien lui-même.
+
+\section{Fournisseurs IA intégrés}
+\TODO{Lister ici, avec exactitude, l'état réel de chaque fournisseur au moment de la
+rédaction finale (implémenté et testé / partiellement implémenté / non implémenté),
+plutôt que l'ambition initiale du cahier des charges.}
+
+\section{Sécurité des clés API}
+Les clés API des fournisseurs IA ne transitent jamais côté client~: elles sont lues
+côté serveur à partir de variables d'environnement, ne sont jamais journalisées, ni
+incluses dans les documents générés, ni committées dans le dépôt Git.
+
+\section{Limites et risques liés à l'IA}
+\begin{itemize}
+    \item Une réponse d'IA reste une interprétation~: elle doit toujours être
+    distinguée d'une information officiellement confirmée par une partie prenante.
+    \item En cas d'indisponibilité du fournisseur IA, le Classic Questionnaire reste
+    pleinement fonctionnel afin de ne jamais bloquer un entretien.
+    \item Aucune information confidentielle non confirmée par la Fondation OCP ne doit
+    être présentée comme un fait acquis dans les documents générés.
+\end{itemize}
