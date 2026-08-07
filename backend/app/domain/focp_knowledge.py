@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """FOCP-specific domain knowledge constants for LLM context enrichment.
 """
 

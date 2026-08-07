@@ -1,7 +1,7 @@
-"""The Document Generator.
+﻿"""The Document Generator.
 
 Assembles every document section from data the other engines already
-produced — Knowledge Graph captured answers, generated Requirements,
+produced â€” Knowledge Graph captured answers, generated Requirements,
 and (if available) the Security Engine's analysis. Nothing here invents
 project content; where source data is missing, sections say so
 explicitly rather than filling in generic filler text.
@@ -14,15 +14,15 @@ should fabricate. Both are called out explicitly wherever they'd
 otherwise appear, rather than being silently skipped.
 """
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.domain import focp_knowledge
 from app.exceptions import NotFoundError
-from app.models.interview import InterviewSession, InterviewTurn
 from app.models.generated_document import GeneratedDocument
+from app.models.interview import InterviewSession, InterviewTurn
 from app.models.knowledge_graph import KnowledgeGraphNode
 from app.models.organization import Organization
 from app.models.project import Project
@@ -41,17 +41,17 @@ from app.services.document_rendering import (
 from app.services.knowledge_graph import KnowledgeGraphService
 
 REQUIREMENT_TYPE_LABELS = {
-    "business": "Exigences métier",
+    "business": "Exigences mÃ©tier",
     "functional": "Exigences fonctionnelles",
     "non_functional": "Exigences non fonctionnelles",
-    "security": "Exigences de sécurité",
+    "security": "Exigences de sÃ©curitÃ©",
     "technical": "Exigences techniques",
     "infrastructure": "Exigences d'infrastructure",
-    "deployment": "Exigences de déploiement",
+    "deployment": "Exigences de dÃ©ploiement",
     "maintenance": "Exigences de maintenance",
     "training": "Exigences de formation",
     "performance": "Exigences de performance",
-    "accessibility": "Exigences d'accessibilité",
+    "accessibility": "Exigences d'accessibilitÃ©",
 }
 
 
@@ -130,7 +130,7 @@ class DocumentGeneratorService:
         cdc = self._build_business_cdc(project, organization, interview_turns, completion)
 
         return {
-            "generated_at": datetime.now(timezone.utc).isoformat(),
+            "generated_at": datetime.now(UTC).isoformat(),
             "project": {
                 "name": project.name,
                 "short_name": project.short_name,
@@ -165,16 +165,16 @@ class DocumentGeneratorService:
                 {
                     "name": "Diagramme de processus BPMN 2.0",
                     "reason": (
-                        "Non généré : BPMN 2.0 est un format XML lourd qui nécessite des "
-                        "données de processus (swimlanes, passerelles) que ce projet ne "
-                        "modélise pas encore."
+                        "Non gÃ©nÃ©rÃ© : BPMN 2.0 est un format XML lourd qui nÃ©cessite des "
+                        "donnÃ©es de processus (swimlanes, passerelles) que ce projet ne "
+                        "modÃ©lise pas encore."
                     ),
                 },
                 {
                     "name": "Maquettes / wireframes d'interface",
                     "reason": (
-                        "Non générées : il s'agit de maquettes visuelles d'interface, pas "
-                        "d'un contenu qu'un pipeline texte/données doit fabriquer."
+                        "Non gÃ©nÃ©rÃ©es : il s'agit de maquettes visuelles d'interface, pas "
+                        "d'un contenu qu'un pipeline texte/donnÃ©es doit fabriquer."
                     ),
                 },
             ],
@@ -219,7 +219,8 @@ class DocumentGeneratorService:
     ) -> dict:
         grouped = self._answer_by_section(turns)
         points = self._missing_confirmation_points(grouped)
-        get = lambda section: " ".join(grouped.get(section, [])).strip()
+        def get(section):
+            return " ".join(grouped.get(section, [])).strip()
 
         features = [
             label for label, section in (
@@ -294,13 +295,13 @@ class DocumentGeneratorService:
             parts.append(objective)
         else:
             parts.append(
-                f"L'objectif métier du projet « {project.name} » n'a pas encore été "
-                "documenté dans l'entretien de cadrage."
+                f"L'objectif mÃ©tier du projet Â« {project.name} Â» n'a pas encore Ã©tÃ© "
+                "documentÃ© dans l'entretien de cadrage."
             )
         if scope:
-            parts.append(f"Périmètre : {scope}")
+            parts.append(f"PÃ©rimÃ¨tre : {scope}")
         if metrics:
-            parts.append(f"Indicateurs de succès : {metrics}")
+            parts.append(f"Indicateurs de succÃ¨s : {metrics}")
         return " ".join(parts)
 
     def _build_data_dictionary(
@@ -328,7 +329,7 @@ class DocumentGeneratorService:
                     entries.append(
                         {
                             "name": table,
-                            "description": f"Référencée par l'exigence {req.requirement_key}.",
+                            "description": f"RÃ©fÃ©rencÃ©e par l'exigence {req.requirement_key}.",
                             "domain": "database",
                             "source_concept_key": req.source_concept_key,
                         }
@@ -346,7 +347,7 @@ class DocumentGeneratorService:
             stories.append(
                 {
                     "requirement_key": req.requirement_key,
-                    "story": f"En tant que {actor}, je veux « {req.title} » afin de {goal}.",
+                    "story": f"En tant que {actor}, je veux Â« {req.title} Â» afin de {goal}.",
                     "acceptance_criteria": req.acceptance_criteria,
                 }
             )
@@ -361,7 +362,7 @@ class DocumentGeneratorService:
                         "requirement_key": req.requirement_key,
                         "test_case": case,
                         "priority": req.priority,
-                        "status": "à exécuter",
+                        "status": "Ã  exÃ©cuter",
                     }
                 )
         return plan
@@ -399,7 +400,7 @@ class DocumentGeneratorService:
             return {
                 "available": False,
                 "note": (
-                    "Aucune analyse de sécurité n'a encore été exécutée pour ce projet "
+                    "Aucune analyse de sÃ©curitÃ© n'a encore Ã©tÃ© exÃ©cutÃ©e pour ce projet "
                     "(POST /projects/{id}/security/analyze)."
                 ),
             }
@@ -438,13 +439,13 @@ class DocumentGeneratorService:
         document = await self.documents.get_for_project(project_id)
         if not document:
             raise NotFoundError(
-                "No document has been generated yet for this project — run generate first."
+                "No document has been generated yet for this project â€” run generate first."
             )
         return document
 
     async def export(self, project_id: uuid.UUID, fmt: str) -> tuple[bytes, str, str]:
         """Returns (content_bytes, media_type, filename). Always renders
-        fresh from the latest persisted content — never a stale cached file.
+        fresh from the latest persisted content â€” never a stale cached file.
         """
         document = await self.get_document(project_id)
         content = document.content

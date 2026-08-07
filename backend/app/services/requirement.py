@@ -22,7 +22,10 @@ from app.domain.requirement_types import (
 from app.exceptions import NotFoundError
 from app.models.knowledge_graph import KnowledgeGraphNode
 from app.models.requirement import Requirement
-from app.repositories.knowledge_graph import KnowledgeGraphEdgeRepository, KnowledgeGraphNodeRepository
+from app.repositories.knowledge_graph import (
+    KnowledgeGraphEdgeRepository,
+    KnowledgeGraphNodeRepository,
+)
 from app.repositories.requirement import RequirementRepository
 from app.services.knowledge_graph import NODE_SUFFICIENT_THRESHOLD
 

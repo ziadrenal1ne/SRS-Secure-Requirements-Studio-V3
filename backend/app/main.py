@@ -9,7 +9,7 @@ from app.database import engine
 from app.exceptions import DomainError
 from app.logging import configure_logging, get_logger
 from app.metrics import PrometheusMiddleware, metrics_endpoint
-from app.models import Base  # noqa: F401 — ensures all models are registered
+from app.models import Base
 from app.routers import (
     ai_settings,
     documents,

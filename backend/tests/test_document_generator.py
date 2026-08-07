@@ -7,7 +7,6 @@ from app.services.document_generator import DocumentGeneratorService
 from app.services.knowledge_graph import KnowledgeGraphService
 from app.services.requirement import RequirementService
 from app.services.security_engine import SecurityEngineService
-
 from tests.conftest import create_project
 
 

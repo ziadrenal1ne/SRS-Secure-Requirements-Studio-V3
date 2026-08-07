@@ -2,7 +2,12 @@ import asyncio
 
 from fastapi import APIRouter
 
-from app.services.ai_settings import AIProviderSettings, load_ai_settings, public_ai_settings, save_ai_settings
+from app.services.ai_settings import (
+    AIProviderSettings,
+    load_ai_settings,
+    public_ai_settings,
+    save_ai_settings,
+)
 from app.services.llm_client import reset_llm_client_cache
 
 router = APIRouter(prefix="/ai", tags=["ai-settings"])
