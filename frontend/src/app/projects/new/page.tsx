@@ -14,12 +14,10 @@ type CreationMode = "classic" | "ai";
 
 export default function NewProjectPage() {
   const router = useRouter();
-  const [name, setName] = React.useState("Plateforme de Gestion des Beneficiaires Eco-Social");
-  const [shortName, setShortName] = React.useState("PGB Eco-Social");
-  const [department, setDepartment] = React.useState("Axe Eco-Social - Fondation OCP");
-  const [description, setDescription] = React.useState(
-    "Conception d'une plateforme de gestion des beneficiaires, cooperatives, conventions, reporting ESG/ODD et tableaux de bord."
-  );
+  const [name, setName] = React.useState("");
+  const [shortName, setShortName] = React.useState("");
+  const [department, setDepartment] = React.useState("");
+  const [description, setDescription] = React.useState("");
   const [mode, setMode] = React.useState<CreationMode>("classic");
   const [error, setError] = React.useState<string | null>(null);
   const [submitting, setSubmitting] = React.useState(false);
@@ -56,8 +54,8 @@ export default function NewProjectPage() {
           <X className="h-4.5 w-4.5" />
         </Link>
         <div>
-          <p className="text-sm font-semibold">Nouveau projet FOCP</p>
-          <p className="text-xs text-muted-foreground">Selectionnez le mode de collecte et lancez la conception.</p>
+          <p className="text-sm font-semibold">Secure Requirements Studio</p>
+          <p className="text-xs text-muted-foreground">Creer un nouveau Cahier des Charges.</p>
         </div>
       </header>
 
@@ -66,7 +64,7 @@ export default function NewProjectPage() {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {[
               { id: "classic" as const, label: "Questionnaire guide", icon: ClipboardList },
-              { id: "ai" as const, label: "AI Interview Qwen", icon: Bot },
+              { id: "ai" as const, label: "Entretien avec IA", icon: Bot },
             ].map((item) => {
               const active = mode === item.id;
               return (

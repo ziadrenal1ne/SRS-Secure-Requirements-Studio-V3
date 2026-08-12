@@ -1,375 +1,84 @@
 import type { WizardStep } from "./types";
 
+const custom = "Autre / Ma réponse";
+
 export const wizardSteps: WizardStep[] = [
   {
     id: "context",
-    title: "Contexte Strategique",
+    title: "Contexte du projet",
     shortTitle: "Contexte",
-    description: "Objectifs, perimetre, budget et KPI du projet.",
+    description: "Nom, objectif, problème et résultat attendu.",
     questions: [
-      {
-        id: "business.objective",
-        title: "Quel est l'objectif metier principal ?",
-        helper: "Le probleme metier a resoudre.",
-        type: "textarea",
-        required: true,
-      },
-      {
-        id: "business.scope_boundaries",
-        title: "Quel est le perimetre fonctionnel et hors-perimetre ?",
-        helper: "Ce qui est inclus et explicitement exclu.",
-        type: "textarea",
-        required: true,
-      },
-      {
-        id: "business.success_metrics",
-        title: "Quels sont les indicateurs de succes (KPI) ?",
-        helper: "Comment mesurer la reussite du projet.",
-        type: "textarea",
-      }
-    ]
+      { id: "project_name", title: "Quel est le nom du projet ?", helper: "", type: "text", required: true },
+      { id: "objective", title: "Quel est l'objectif principal de ce projet ?", helper: "", type: "textarea", required: true },
+      { id: "problem", title: "Quel problème souhaitez-vous résoudre ?", helper: "", type: "textarea", required: true },
+      { id: "current_situation", title: "Comment ce problème est-il géré aujourd'hui ?", helper: "", type: "textarea" },
+      { id: "expected_result", title: "Qu'aimeriez-vous pouvoir faire grâce à la nouvelle application ?", helper: "", type: "textarea", required: true },
+    ],
   },
   {
-    id: "stakeholders",
-    title: "Parties Prenantes",
-    shortTitle: "Parties Prenantes",
-    description: "Sponsor, decideurs, et comite de pilotage.",
-    questions: [
-      {
-        id: "stakeholders.sponsor",
-        title: "Qui est le sponsor du projet ?",
-        helper: "Le commanditaire principal.",
-        type: "text",
-        required: true,
-      },
-      {
-        id: "stakeholders.decision_makers",
-        title: "Qui sont les decideurs ?",
-        helper: "Membres du comite de pilotage.",
-        type: "text",
-      },
-      {
-        id: "stakeholders.departments_involved",
-        title: "Quels departements sont impliques ?",
-        helper: "Directions concernees par le projet.",
-        type: "checkbox",
-        options: [
-          { id: "opt-agri", label: "Agriculture & Developpement Rural" },
-          { id: "opt-edu", label: "Education & Formation" },
-          { id: "opt-entre", label: "Entrepreneuriat" },
-          { id: "opt-com", label: "Communication & Partenariats" }
-        ],
-        customPrompt: "Autre departement..."
-      }
-    ]
-  },
-  {
-    id: "beneficiaries",
-    title: "Beneficiaires & Cooperatives",
-    shortTitle: "Beneficiaires",
-    description: "Definition et sources des beneficiaires.",
-    questions: [
-      {
-        id: "beneficiaries.definition",
-        title: "Qui sont les beneficiaires finaux ?",
-        helper: "Agriculteurs, cooperatives, etudiants...",
-        type: "textarea",
-        required: true,
-      },
-      {
-        id: "beneficiaries.data_sources",
-        title: "Sources des donnees beneficiaires ?",
-        helper: "D'ou proviennent les donnees existantes.",
-        type: "textarea",
-      },
-      {
-        id: "beneficiaries.privacy_sensitivity",
-        title: "Sensibilite des donnees ?",
-        helper: "Niveau de confidentialite (ex: donnees personnelles).",
-        type: "radio",
-        options: [
-          { id: "low", label: "Publique" },
-          { id: "medium", label: "Interne" },
-          { id: "high", label: "Confidentielle (Donnees personnelles)" }
-        ]
-      }
-    ]
-  },
-  {
-    id: "users_roles",
-    title: "Profils Utilisateurs & Roles",
+    id: "users",
+    title: "Utilisateurs",
     shortTitle: "Utilisateurs",
-    description: "Qui va utiliser l'application.",
+    description: "Profils, actions et visibilité des informations.",
     questions: [
-      {
-        id: "users.primary_personas",
-        title: "Quels sont les profils utilisateurs ?",
-        helper: "Ceux qui se connectent au systeme.",
-        type: "textarea",
-        required: true,
-      },
-      {
-        id: "users.access_channels",
-        title: "Canaux d'acces ?",
-        helper: "Web, Mobile, Tablette, API...",
-        type: "checkbox",
-        options: [
-          { id: "web", label: "Web Desktop" },
-          { id: "mobile", label: "Application Mobile" },
-          { id: "tablet", label: "Tablette Terrain" }
-        ]
-      },
-      {
-        id: "roles.catalog",
-        title: "Quels sont les roles specifiques ?",
-        helper: "Admin, validateur, lecteur...",
-        type: "textarea",
-      }
-    ]
+      { id: "users", title: "Qui utilisera principalement l'application ?", helper: "", type: "checkbox", options: ["Administrateurs", "Employés", "Managers", "Clients", "Bénéficiaires", "Partenaires", "Responsables métier", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+      { id: "user_actions", title: "Que doit pouvoir faire chaque type d'utilisateur ?", helper: "", type: "textarea" },
+      { id: "restricted_information", title: "Certaines informations doivent-elles être visibles seulement par certains utilisateurs ?", helper: "", type: "radio", options: ["Oui", "Non", "Je ne sais pas", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+    ],
   },
   {
-    id: "permissions",
-    title: "Permissions & Habilitations",
-    shortTitle: "Permissions",
-    description: "Matrice RBAC et visibilite.",
+    id: "features",
+    title: "Fonctionnalités",
+    shortTitle: "Fonctions",
+    description: "Informations, documents, recherche et sorties.",
     questions: [
-      {
-        id: "permissions.matrix",
-        title: "Matrice des permissions (RBAC) ?",
-        helper: "Qui peut voir/modifier quoi.",
-        type: "textarea",
-      },
-      {
-        id: "permissions.data_visibility_scope",
-        title: "Portee de visibilite ?",
-        helper: "Par region, par departement, globale...",
-        type: "textarea",
-      }
-    ]
-  },
-  {
-    id: "entities_data",
-    title: "Entites Metier & Donnees",
-    shortTitle: "Entites",
-    description: "Structure de donnees et volumetrie.",
-    questions: [
-      {
-        id: "entities.core_business_objects",
-        title: "Quels sont les objets metier principaux ?",
-        helper: "Dossier, Projet, Beneficiaire, Convention...",
-        type: "textarea",
-        required: true,
-      },
-      {
-        id: "entities.lifecycle_states",
-        title: "Cycle de vie des entites (statuts) ?",
-        helper: "Ex: Brouillon, Soumis, Valide, Rejete.",
-        type: "textarea",
-      },
-      {
-        id: "database.volume_growth",
-        title: "Volumetrie et croissance ?",
-        helper: "Nombre d'enregistrements prevus.",
-        type: "text",
-      }
-    ]
+      { id: "main_features", title: "Quelles sont les principales fonctionnalités souhaitées ?", helper: "", type: "checkbox", options: ["Gestion des utilisateurs", "Gestion des données", "Gestion des bénéficiaires", "Gestion des documents", "Recherche & Filtres", "Tableaux de bord", "Statistiques", "Notifications", "Rapports", "Cartographie", "Import de fichiers", "Export de données", "Suivi d'activités", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+      { id: "view_information", title: "Quelles informations les utilisateurs doivent-ils consulter ?", helper: "", type: "textarea" },
+      { id: "edit_information", title: "Quelles informations les utilisateurs doivent-ils ajouter ou modifier ?", helper: "", type: "textarea" },
+      { id: "documents", title: "L'application doit-elle gérer des documents ?", helper: "Si oui, précisez les types.", type: "radio", options: ["Oui", "Non", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+      { id: "search", title: "Comment les utilisateurs doivent-ils rechercher les informations ?", helper: "", type: "checkbox", options: ["Nom", "Région", "Date", "Statut", "Catégorie", "Type", "Identifiant", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+      { id: "dashboards", title: "Quelles informations importantes voulez-vous voir sur les tableaux de bord ?", helper: "", type: "textarea" },
+      { id: "maps", title: "Avez-vous besoin d'afficher des informations sur une carte ?", helper: "Si oui, précisez quoi afficher.", type: "radio", options: ["Oui", "Non", "Peut-être", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+      { id: "reports", title: "Avez-vous besoin de générer des rapports ?", helper: "Si oui, précisez lesquels.", type: "radio", options: ["Oui", "Non", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+      { id: "exports", title: "Dans quels formats souhaitez-vous récupérer les données ?", helper: "", type: "checkbox", options: ["PDF", "Excel", "CSV", "Word", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+      { id: "notifications", title: "L'application doit-elle envoyer des notifications ou rappels ?", helper: "Si oui, précisez les situations.", type: "radio", options: ["Oui", "Non", "Peut-être", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+    ],
   },
   {
     id: "workflow",
-    title: "Processus & Workflows",
-    shortTitle: "Workflows",
-    description: "Processus de validation et approbation.",
+    title: "Processus métier",
+    shortTitle: "Processus",
+    description: "Étapes, validation, refus et historique.",
     questions: [
-      {
-        id: "workflow.approval_process",
-        title: "Processus d'approbation ?",
-        helper: "Circuit de validation des donnees.",
-        type: "textarea",
-      },
-      {
-        id: "workflow.task_assignment",
-        title: "Assignation des taches ?",
-        helper: "Comment les taches sont distribuees.",
-        type: "textarea",
-      }
-    ]
+      { id: "main_workflow", title: "Pouvez-vous décrire les principales étapes d'utilisation ?", helper: "", type: "textarea" },
+      { id: "validation", title: "Certaines informations doivent-elles être vérifiées ou validées ?", helper: "Si oui, précisez par qui.", type: "radio", options: ["Oui", "Non", "Je ne sais pas", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+      { id: "rejection", title: "Que doit-il se passer lorsqu'une demande est refusée ?", helper: "", type: "checkbox", options: ["Retour pour correction", "Notification", "Nouvelle soumission", "Archivage", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+      { id: "history", title: "Est-il important de conserver l'historique des modifications ?", helper: "", type: "radio", options: ["Oui", "Non", "Pour certaines informations seulement", "Je ne sais pas", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+    ],
   },
   {
-    id: "reporting",
-    title: "Reporting & Tableaux de Bord",
-    shortTitle: "Reporting",
-    description: "Analytique et rapports.",
+    id: "constraints",
+    title: "Contraintes",
+    shortTitle: "Contraintes",
+    description: "Protection, accès, appareils et langues.",
     questions: [
-      {
-        id: "reporting.kpis",
-        title: "Quels rapports sont necessaires ?",
-        helper: "Liste des rapports et tableaux de bord.",
-        type: "textarea",
-      },
-      {
-        id: "api.export_requirements",
-        title: "Besoins d'export ?",
-        helper: "CSV, PDF, Excel...",
-        type: "checkbox",
-        options: [
-          { id: "csv", label: "Export CSV/Excel" },
-          { id: "pdf", label: "Export PDF" }
-        ]
-      }
-    ]
+      { id: "sensitive_information", title: "Quelles informations doivent être particulièrement protégées ?", helper: "", type: "checkbox", options: ["Informations personnelles", "Informations financières", "Documents confidentiels", "Données médicales", "Données professionnelles", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+      { id: "availability", title: "L'application doit-elle fonctionner avec une connexion limitée ?", helper: "", type: "radio", options: ["En ligne uniquement", "Connexion limitée", "Hors ligne nécessaire", "Je ne sais pas", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+      { id: "devices", title: "Sur quels appareils l'application doit-elle fonctionner ?", helper: "", type: "checkbox", options: ["Ordinateur", "Smartphone", "Tablette", "Tous", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+      { id: "languages", title: "Quelles langues doivent être disponibles ?", helper: "", type: "checkbox", options: ["Français", "Arabe", "Anglais", custom].map((label) => ({ id: label, label })), customPrompt: "Ma réponse" },
+    ],
   },
   {
-    id: "integrations",
-    title: "Integrations & API",
-    shortTitle: "Integrations",
-    description: "Systemes tiers et APIs externes.",
+    id: "priorities",
+    title: "Priorités",
+    shortTitle: "Priorités",
+    description: "MVP, évolutions et dernières précisions.",
     questions: [
-      {
-        id: "api.external_integrations",
-        title: "Quels systemes externes integrer ?",
-        helper: "ERP, CRM, systemes SIG/GIS, etc.",
-        type: "textarea",
-      },
-      {
-        id: "database.existing_systems",
-        title: "Bases de donnees existantes a integrer ?",
-        helper: "Sources de donnees legacy.",
-        type: "textarea",
-      }
-    ]
+      { id: "mvp", title: "Quelles fonctionnalités sont indispensables pour la première version ?", helper: "", type: "textarea", required: true },
+      { id: "future_features", title: "Quelles fonctionnalités pourraient être ajoutées plus tard ?", helper: "", type: "textarea" },
+      { id: "special_constraints", title: "Y a-t-il des contraintes ou règles particulières à respecter ?", helper: "", type: "textarea" },
+      { id: "final_notes", title: "Y a-t-il autre chose à prévoir dans l'application ?", helper: "", type: "textarea" },
+    ],
   },
-  {
-    id: "notifications",
-    title: "Notifications & Messagerie",
-    shortTitle: "Notifications",
-    description: "Alertes et communication.",
-    questions: [
-      {
-        id: "notifications.channels",
-        title: "Canaux de notification ?",
-        helper: "Email, SMS, Push, In-app...",
-        type: "checkbox",
-        options: [
-          { id: "email", label: "Email" },
-          { id: "sms", label: "SMS" },
-          { id: "in_app", label: "In-App" }
-        ]
-      },
-      {
-        id: "messaging.internal_communication",
-        title: "Messagerie interne ?",
-        helper: "Commentaires, chat, annotations.",
-        type: "textarea",
-      }
-    ]
-  },
-  {
-    id: "security",
-    title: "Securite & Cybersecurite",
-    shortTitle: "Securite",
-    description: "Authentification et audit.",
-    questions: [
-      {
-        id: "security.authentication_method",
-        title: "Methode d'authentification ?",
-        helper: "SSO, Mot de passe, MFA...",
-        type: "checkbox",
-        options: [
-          { id: "sso", label: "SSO Azure AD" },
-          { id: "mfa", label: "MFA" },
-          { id: "local", label: "Local (Email/Mot de passe)" }
-        ]
-      },
-      {
-        id: "security.audit_logging",
-        title: "Exigences d'audit (Logs) ?",
-        helper: "Quelles actions tracer.",
-        type: "textarea",
-      }
-    ]
-  },
-  {
-    id: "infrastructure",
-    title: "Infrastructure & Deploiement",
-    shortTitle: "Infrastructure",
-    description: "Hebergement et architecture.",
-    questions: [
-      {
-        id: "deployment.target_environment",
-        title: "Environnement cible ?",
-        helper: "Cloud, On-premise, Hybride...",
-        type: "radio",
-        options: [
-          { id: "cloud", label: "Cloud (AWS/Azure)" },
-          { id: "onprem", label: "On-premise (Local)" }
-        ]
-      },
-      {
-        id: "deployment.availability_requirements",
-        title: "Exigences de disponibilite (SLA) ?",
-        helper: "Uptime attendu.",
-        type: "text",
-      }
-    ]
-  },
-  {
-    id: "maintenance",
-    title: "Continuite & Maintenance",
-    shortTitle: "Maintenance",
-    description: "Disaster recovery et backup.",
-    questions: [
-      {
-        id: "compliance.disaster_recovery",
-        title: "Plan de reprise d'activite (PRA) ?",
-        helper: "Objectifs RTO/RPO.",
-        type: "textarea",
-      },
-      {
-        id: "database.retention_policy",
-        title: "Politique de retention des donnees ?",
-        helper: "Duree de conservation.",
-        type: "text",
-      }
-    ]
-  },
-  {
-    id: "training",
-    title: "Formation & Documentation",
-    shortTitle: "Formation",
-    description: "Besoins en formation et manuels.",
-    questions: [
-      {
-        id: "training.needs",
-        title: "Besoins en formation ?",
-        helper: "Formations utilisateurs et admins.",
-        type: "textarea",
-      },
-      {
-        id: "testing.uat_stakeholders",
-        title: "Parties prenantes UAT ?",
-        helper: "Qui valide la recette fonctionnelle.",
-        type: "textarea",
-      }
-    ]
-  },
-  {
-    id: "compliance",
-    title: "Conformite & Legal",
-    shortTitle: "Conformite",
-    description: "Lois et regulations.",
-    questions: [
-      {
-        id: "security.regulatory_context",
-        title: "Cadre reglementaire (Loi 09-08, RGPD) ?",
-        helper: "Quelles lois s'appliquent.",
-        type: "textarea",
-      },
-      {
-        id: "compliance.internal_policies",
-        title: "Politiques internes applicables ?",
-        helper: "Chartes informatiques et qualite.",
-        type: "textarea",
-      }
-    ]
-  }
 ];

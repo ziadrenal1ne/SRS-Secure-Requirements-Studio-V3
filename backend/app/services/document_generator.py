@@ -1,4 +1,4 @@
-﻿"""The Document Generator.
+"""The Document Generator.
 
 Assembles every document section from data the other engines already
 produced â€” Knowledge Graph captured answers, generated Requirements,
@@ -31,6 +31,8 @@ from app.repositories.generated_document import GeneratedDocumentRepository
 from app.repositories.knowledge_graph import KnowledgeGraphNodeRepository
 from app.repositories.requirement import RequirementRepository
 from app.repositories.security import SecurityAnalysisRepository
+from app.requirements_engine.document_generator import build_cahier_des_charges
+from app.requirements_engine.requirement_engine import build_project_model
 from app.services.document_rendering import (
     render_docx,
     render_html,
@@ -123,11 +125,15 @@ class DocumentGeneratorService:
             if n.domain == "stakeholders" and _answer(n)
         ]
 
-        data_dictionary = self._build_data_dictionary(nodes, requirements)
-        user_stories = self._build_user_stories(requirements)
-        test_plan = self._build_test_plan(requirements)
-        mvp_diagram = self._build_mvp_diagram(nodes, requirements, project)
-        cdc = self._build_business_cdc(project, organization, interview_turns, completion)
+        answers = self._answers_by_question_id(interview_turns)
+        if not answers:
+            answers = self._answers_from_graph(by_key)
+        cdc_model = build_project_model(answers, fallback_name=project.name)
+        cdc = build_cahier_des_charges(
+            cdc_model, int(completion.get("overall_completion", 100))
+        )
+        mvp_diagram = self._build_mvp_diagram(cdc_model, project)
+        conception_mvp = self._build_conception_mvp(cdc_model, cdc, mvp_diagram)
 
         return {
             "generated_at": datetime.now(UTC).isoformat(),
@@ -142,7 +148,7 @@ class DocumentGeneratorService:
             "completeness": completion,
             "executive_summary": self._build_executive_summary(by_key, project),
             "cahier_des_charges": cdc,
-            "conception_mvp": self._build_conception_mvp(cdc, mvp_diagram),
+            "conception_mvp": {"summary": "", "modules": [], "flows": [], "data": [], "security": [], "diagram": ""},
             "governance_and_esg": {
                 "sdgs": focp_knowledge.SUSTAINABLE_DEVELOPMENT_GOALS,
                 "esg_indicators": focp_knowledge.ESG_INDICATORS,
@@ -164,18 +170,11 @@ class DocumentGeneratorService:
             "unimplemented_sections": [
                 {
                     "name": "Diagramme de processus BPMN 2.0",
-                    "reason": (
-                        "Non gÃ©nÃ©rÃ© : BPMN 2.0 est un format XML lourd qui nÃ©cessite des "
-                        "donnÃ©es de processus (swimlanes, passerelles) que ce projet ne "
-                        "modÃ©lise pas encore."
-                    ),
+                    "reason": "Non genere dans le Cahier des Charges simplifie V2.",
                 },
                 {
                     "name": "Maquettes / wireframes d'interface",
-                    "reason": (
-                        "Non gÃ©nÃ©rÃ©es : il s'agit de maquettes visuelles d'interface, pas "
-                        "d'un contenu qu'un pipeline texte/donnÃ©es doit fabriquer."
-                    ),
+                    "reason": "Non generees dans le Cahier des Charges simplifie V2.",
                 },
             ],
         }
@@ -195,6 +194,28 @@ class DocumentGeneratorService:
             section = str(turn.extracted_data.get("section") or turn.concept_key)
             grouped.setdefault(section, []).append(turn.answer.strip())
         return grouped
+
+    def _answers_by_question_id(self, turns: list[InterviewTurn]) -> dict[str, str]:
+        answers: dict[str, str] = {}
+        for turn in turns:
+            question_id = str(turn.extracted_data.get("question_id") or "")
+            if question_id:
+                answers[question_id] = turn.answer.strip()
+        return answers
+
+    def _answers_from_graph(self, by_key: dict[str, KnowledgeGraphNode]) -> dict[str, str]:
+        return {
+            "objective": _answer(by_key.get("business.objective")),
+            "problem": _answer(by_key.get("business.scope_boundaries")),
+            "expected_result": _answer(by_key.get("business.success_metrics")),
+            "users": _answer(by_key.get("users.primary_personas")),
+            "main_features": _answer(by_key.get("entities.core_business_objects")),
+            "documents": _answer(by_key.get("reporting.document_upload")),
+            "dashboards": _answer(by_key.get("reporting.dashboard_design")),
+            "reports": _answer(by_key.get("reporting.kpis")),
+            "sensitive_information": _answer(by_key.get("security.data_classification")),
+            "mvp": _answer(by_key.get("business.scope_boundaries")),
+        }
 
     def _missing_confirmation_points(self, grouped: dict[str, list[str]]) -> list[str]:
         required = {
@@ -273,127 +294,35 @@ class DocumentGeneratorService:
             base.append(f"Regles de partage a appliquer : {sharing}")
         return base
 
-    def _build_conception_mvp(self, cdc: dict, diagram: str) -> dict:
+    def _build_conception_mvp(self, cdc_model, cdc: dict, diagram: str) -> dict:
         return {
-            "summary": "Conception MVP basee sur le cahier des charges genere : deux profils principaux, une plateforme centrale, des modules metier, un stockage securise et des controles d'acces.",
-            "actors": ["Utilisateur Cooperative", "Administrateur Fondation OCP", "Collaborateur Fondation OCP"],
-            "modules": [item for section in cdc["sections"] if section["title"].startswith("4.") for item in section["items"]],
-            "flows": ["Saisie ou import des informations", "Validation Fondation OCP", "Consultation des tableaux de bord", "Generation et partage des rapports"],
-            "data": [item for section in cdc["sections"] if section["title"].startswith("5.") for item in section["items"]],
-            "security": [item for section in cdc["sections"] if section["title"].startswith("7.") for item in section["items"]],
+            "summary": f"Conception MVP basée sur le Cahier des Charges du projet {cdc_model.project_name}.",
+            "actors": cdc_model.users or ["Utilisateur Métier", "Administrateur"],
+            "modules": cdc_model.functional_requirements,
+            "flows": ["Saisie et mise à jour des données", "Circuit de validation", "Consultation du tableau de bord", "Génération et export des rapports"],
+            "data": cdc_model.data_requirements,
+            "security": cdc_model.security_needs,
             "diagram": diagram,
         }
 
-    def _build_executive_summary(
-        self, by_key: dict[str, KnowledgeGraphNode], project: Project
-    ) -> str:
-        objective = _answer(by_key.get("business.objective"))
-        metrics = _answer(by_key.get("business.success_metrics"))
-        scope = _answer(by_key.get("business.scope_boundaries"))
-        parts = []
-        if objective:
-            parts.append(objective)
-        else:
-            parts.append(
-                f"L'objectif mÃ©tier du projet Â« {project.name} Â» n'a pas encore Ã©tÃ© "
-                "documentÃ© dans l'entretien de cadrage."
-            )
-        if scope:
-            parts.append(f"PÃ©rimÃ¨tre : {scope}")
-        if metrics:
-            parts.append(f"Indicateurs de succÃ¨s : {metrics}")
-        return " ".join(parts)
+    def _build_mvp_diagram(self, cdc_model, project: Project) -> str:
+        actors = cdc_model.users or ["Utilisateur Métier", "Administrateur"]
+        actor_nodes = []
+        for idx, actor in enumerate(actors[:3]):
+            node_id = f"A{idx+1}"
+            actor_nodes.append(f'    {node_id}["{actor}"] --> P["Plateforme {project.name}"]')
+        
+        feature_nodes = []
+        features = cdc_model.functional_requirements or ["Gestion des données"]
+        for idx, feat in enumerate(features[:6]):
+            node_id = f"F{idx+1}"
+            clean_name = feat.replace("Module de ", "").replace("permettant la gestion complète du périmètre associé", "").strip(" .")
+            feature_nodes.append(f'    P --> {node_id}["{clean_name}"]')
+            feature_nodes.append(f'    {node_id} --> DB[(Stockage des données)]')
+        
+        lines = ["flowchart TD"] + actor_nodes + feature_nodes
+        return "\n".join(lines)
 
-    def _build_data_dictionary(
-        self, nodes: list[KnowledgeGraphNode], requirements
-    ) -> list[dict]:
-        entries = []
-        for node in nodes:
-            if node.domain not in ("entities", "database"):
-                continue
-            answer = _answer(node)
-            if not answer:
-                continue
-            entries.append(
-                {
-                    "name": node.label,
-                    "description": answer,
-                    "domain": node.domain,
-                    "source_concept_key": node.concept_key,
-                }
-            )
-        known_names = {e["name"] for e in entries}
-        for req in requirements:
-            for table in req.database_tables:
-                if table and table not in known_names:
-                    entries.append(
-                        {
-                            "name": table,
-                            "description": f"RÃ©fÃ©rencÃ©e par l'exigence {req.requirement_key}.",
-                            "domain": "database",
-                            "source_concept_key": req.source_concept_key,
-                        }
-                    )
-                    known_names.add(table)
-        return entries
-
-    def _build_user_stories(self, requirements) -> list[dict]:
-        stories = []
-        for req in requirements:
-            if req.requirement_type not in ("functional", "business"):
-                continue
-            actor = req.actors[0] if req.actors else "Utilisateur"
-            goal = req.business_goal or req.title
-            stories.append(
-                {
-                    "requirement_key": req.requirement_key,
-                    "story": f"En tant que {actor}, je veux Â« {req.title} Â» afin de {goal}.",
-                    "acceptance_criteria": req.acceptance_criteria,
-                }
-            )
-        return stories
-
-    def _build_test_plan(self, requirements) -> list[dict]:
-        plan = []
-        for req in requirements:
-            for case in req.test_cases:
-                plan.append(
-                    {
-                        "requirement_key": req.requirement_key,
-                        "test_case": case,
-                        "priority": req.priority,
-                        "status": "Ã  exÃ©cuter",
-                    }
-                )
-        return plan
-
-    def _build_mvp_diagram(
-        self, nodes: list[KnowledgeGraphNode], requirements, project: Project
-    ) -> str:
-        return "\n".join(
-            [
-                "flowchart TD",
-                '    UC["Utilisateur Cooperative"] --> P["Plateforme SRS Fondation OCP"]',
-                '    AF["Administrateur Fondation OCP"] --> P',
-                '    CF["Collaborateur Fondation OCP"] --> P',
-                '    P --> GC["Gestion des cooperatives"]',
-                '    P --> GB["Beneficiaires"]',
-                '    P --> DOC["Documents"]',
-                '    P --> VAL["Gestion / Validation"]',
-                '    P --> DASH["Dashboards"]',
-                '    P --> MAP["Carte"]',
-                '    P --> ODD["ODD / ESG"]',
-                '    P --> NOTIF["Notifications"]',
-                '    P --> REP["Reporting"]',
-                '    P --> SEC["Securite : acces, tracabilite, sessions, fichiers"]',
-                '    GC --> DB[(Stockage des donnees)]',
-                '    GB --> DB',
-                '    DOC --> FS[(Stockage des documents)]',
-                '    REP --> EXP["Exports PDF / DOCX / Markdown / LaTeX"]',
-                '    SEC --> DB',
-                '    SEC --> FS',
-            ]
-        )
 
     def _security_section(self, security: SecurityAnalysis | None) -> dict:
         if not security:

@@ -9,7 +9,7 @@ import { ProjectSubNav } from "@/components/project/project-subnav";
 import { QuestionCard, type AnswerValue } from "@/components/wizard/question-card";
 import { Stepper } from "@/components/wizard/stepper";
 import { wizardSteps } from "@/lib/questionnaire";
-import { ApiError, interviewApi, knowledgeGraphApi, type ProjectCompletion } from "@/lib/api";
+import { ApiError, documentsApi, interviewApi, knowledgeGraphApi, type ProjectCompletion } from "@/lib/api";
 import type { WizardQuestion } from "@/lib/types";
 
 export default function ProjectInterviewPage() {
@@ -44,9 +44,8 @@ export default function ProjectInterviewPage() {
   }, [projectId]);
 
   React.useEffect(() => {
-    if (requestedMode === "classic") return;
     (async () => {
-      setLoading(true);
+      setLoading(requestedMode === "ai");
       try {
         const session = await interviewApi.start(projectId);
         setTurnsAnswered(session.turns.length);
@@ -57,7 +56,7 @@ export default function ProjectInterviewPage() {
         if (session.status === "completed") setStatus("completed");
         await refreshCompletion();
       } catch (err) {
-        setError(err instanceof ApiError ? err.message : "AI provider unavailable.");
+        setError(err instanceof ApiError ? err.message : "Service indisponible.");
         setMode("classic");
       } finally {
         setLoading(false);
@@ -67,14 +66,13 @@ export default function ProjectInterviewPage() {
 
   async function handleClassicNext() {
     const currentStep = wizardSteps[stepIndex];
-    const currentQuestion = currentStep.questions[questionIndex];
     const lastQuestion = questionIndex >= currentStep.questions.length - 1;
     const lastStep = stepIndex >= wizardSteps.length - 1;
     
     if (classicAnswer) {
       const answerStr = Array.isArray(classicAnswer) ? classicAnswer.join(", ") : classicAnswer;
       try {
-        await interviewApi.answer(projectId, `${currentQuestion.title}: ${answerStr}`);
+        await interviewApi.answer(projectId, answerStr);
       } catch (e) {
         console.error("Failed to save answer to graph", e);
       }
@@ -87,6 +85,7 @@ export default function ProjectInterviewPage() {
       setStepIndex((current) => current + 1);
       setQuestionIndex(0);
     } else {
+      await documentsApi.generate(projectId);
       setStatus("completed");
     }
   }
@@ -137,7 +136,7 @@ export default function ProjectInterviewPage() {
           </div>
           <h1 className="mt-5 font-display text-xl font-semibold">Cahier des Charges genere</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            L&apos;entretien est termine apres maximum 20 questions. Le Cahier des Charges et la conception MVP sont prets.
+            Votre entretien est termine. Nous avons prepare votre Cahier des Charges.
           </p>
           <div className="mt-6 flex flex-col gap-2.5">
             <Link href={`/projects/${projectId}/documents`}>
@@ -159,7 +158,7 @@ export default function ProjectInterviewPage() {
     const currentQuestion = currentStep.questions[questionIndex];
     const answered = wizardSteps.slice(0, stepIndex).reduce((sum, step) => sum + step.questions.length, 0) + questionIndex;
     const total = wizardSteps.reduce((sum, step) => sum + step.questions.length, 0);
-    const progress = Math.round((answered / total) * 100);
+    const progress = Math.round(((answered + 1) / total) * 100);
 
     return (
       <Shell projectId={projectId} title={headerTitle} subtitle={currentStep.title}>
@@ -193,17 +192,18 @@ export default function ProjectInterviewPage() {
 
   const syntheticQuestion: WizardQuestion = {
     id: conceptKey ?? "ai-question",
-    title: question ?? "Decrivez le besoin prioritaire pour la plateforme Eco-Social.",
-    helper: "Selectionnez une ou plusieurs suggestions si elles conviennent, puis ajoutez votre reponse libre.",
+    title: question ?? "Décrivez le besoin principal pour cette application.",
+    helper: "Sélectionnez les suggestions qui conviennent, puis complétez avec votre réponse libre si besoin.",
     type: questionOptions.length ? "checkbox" : "textarea",
     options: questionOptions.map((option) => ({ id: option, label: option })),
-    customPrompt: "Autre reponse",
-    placeholder: "Votre reponse...",
+    customPrompt: "Autre réponse",
+    placeholder: "Votre réponse...",
     required: true,
   };
 
+
   return (
-    <Shell projectId={projectId} title={headerTitle} subtitle={`${Math.min(turnsAnswered + 1, 20)}/20 - ${section ?? "Question metier"}`}>
+    <Shell projectId={projectId} title={headerTitle} subtitle={`${Math.min(turnsAnswered + 1, 30)}/30 - ${section ?? "Question metier"}`}>
       {completion && (
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
           <div className="h-full rounded-full bg-accent transition-all duration-500" style={{ width: `${completion.overall_completion}%` }} />

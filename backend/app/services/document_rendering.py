@@ -162,53 +162,38 @@ def render_markdown(content: dict) -> str:
 def render_business_markdown(content: dict) -> str:
     p = content["project"]
     cdc = content["cahier_des_charges"]
-    conception = content["conception_mvp"]
+    date_str = content.get("generated_at", "")[:10]
+    org_str = p.get("organization") or "Organisation Client"
+
     lines = [
-        f"# Cahier des charges - {p['name']}",
+        f"# Cahier des Charges — {p['name']}",
         "",
-        f"**Titre complet :** {cdc['title']}",
+        f"**Organisation :** {org_str}  ",
+        f"**Date :** {date_str} | **Statut :** {p.get('status', 'Brouillon')} | **Complétude :** {cdc['completeness_score']}%",
         "",
-        f"*{p['organization']} - genere le {content['generated_at']}*",
+        "---",
         "",
-        "## Cahier des Charges genere",
-        "",
-        "### Resume",
+        "## RÉSUMÉ ÉXÉCUTIF",
         "",
         cdc["summary"],
         "",
-        f"**Score de completude :** {cdc['completeness_score']}%",
-        "",
     ]
-    if cdc["points_to_confirm"]:
-        lines += ["### Points a confirmer", ""]
-        lines += [f"- {point}" for point in cdc["points_to_confirm"]]
-        lines.append("")
 
     for section in cdc["sections"]:
         lines += [f"## {section['title']}", ""]
-        lines += [f"- {item}" for item in section["items"]]
+        for item in section["items"]:
+            if item.startswith("•") or item.startswith("-"):
+                lines.append(item)
+            else:
+                lines.append(f"• {item}")
         lines.append("")
 
-    lines += [
-        "## Conception MVP",
-        "",
-        "### Resume architectural",
-        "",
-        conception["summary"],
-        "",
-        "### Modules",
-        "",
-    ]
-    lines += [f"- {module}" for module in conception["modules"]]
-    lines += [
-        "",
-        "### Diagramme unique",
-        "",
-        "```mermaid",
-        conception["diagram"],
-        "```",
-        "",
-    ]
+    if cdc.get("points_to_confirm"):
+        lines += ["## POINTS À VALIDER", ""]
+        for point in cdc["points_to_confirm"]:
+            lines.append(f"- [ ] {point}")
+        lines.append("")
+
     return "\n".join(lines)
 
 
@@ -257,7 +242,7 @@ th, td {{ border: 1px solid #ddd; padding: 0.5rem; text-align: left; font-size: 
 th {{ background: #f4f4f4; }}
 code {{ background: #f4f4f4; padding: 0.1rem 0.3rem; border-radius: 3px; }}
 pre {{ background: #f4f4f4; padding: 1rem; overflow-x: auto; border-radius: 6px; }}
-h1, h2, h3 {{ color: #14532d; }}
+h1, h2, h3 {{ color: #0284c7; }}
 </style>
 </head>
 <body>
@@ -267,93 +252,37 @@ h1, h2, h3 {{ color: #14532d; }}
 
 
 def render_docx(content: dict) -> bytes:
+
+    return render_business_docx(content)
+
+
+def render_business_docx(content: dict) -> bytes:
+
     doc = Document()
     p = content["project"]
+    cdc = content["cahier_des_charges"]
+    date_str = content.get("generated_at", "")[:10]
 
-    doc.add_heading(f"Cahier des charges — {p['name']}", level=0)
-    doc.add_paragraph(f"{p['organization']} — généré le {content['generated_at']}")
+    doc.add_heading(f"Cahier des Charges — {p['name']}", level=0)
+    meta_p = doc.add_paragraph()
+    meta_p.add_run(f"Organisation : {p.get('organization') or 'Client'} | Date : {date_str} | Complétude : {cdc['completeness_score']}%").italic = True
 
-    doc.add_heading("1. Résumé exécutif", level=1)
-    doc.add_paragraph(content["executive_summary"])
-    doc.add_paragraph(
-        f"Statut : {p['status']} · Complétude : {content['completeness']['overall_completion']}% · "
-        f"Confiance : {content['completeness']['overall_confidence']}%"
-    )
+    doc.add_heading("Résumé Exécutif", level=1)
+    doc.add_paragraph(cdc["summary"])
 
-    if content["stakeholders"]:
-        doc.add_heading("2. Parties prenantes", level=1)
-        for s in content["stakeholders"]:
-            doc.add_paragraph(f"{s['concept']} : {s['answer']}", style="List Bullet")
+    for section in cdc["sections"]:
+        doc.add_heading(section["title"], level=1)
+        for item in section["items"]:
+            clean_item = item.lstrip("•- ").strip()
+            doc.add_paragraph(clean_item, style="List Bullet")
 
-    doc.add_heading("3. Exigences", level=1)
-    if not content["requirements_by_type"]:
-        doc.add_paragraph("Aucune exigence n'a encore été générée pour ce projet.")
-    for req_type, reqs in content["requirements_by_type"].items():
-        label = content["requirement_type_labels"].get(req_type, req_type)
-        doc.add_heading(label, level=2)
-        for r in reqs:
-            heading = doc.add_paragraph()
-            run = heading.add_run(f"{r['requirement_key']} — {r['title']}")
-            run.bold = True
-            doc.add_paragraph(f"Priorité : {r['priority']} · Risque : {r['risk']} · Statut : {r['status']}")
-            doc.add_paragraph(r["description"])
-            for c in r["acceptance_criteria"]:
-                doc.add_paragraph(c, style="List Bullet")
-
-    doc.add_heading("4. Dictionnaire de données", level=1)
-    if content["data_dictionary"]:
-        table = doc.add_table(rows=1, cols=3)
-        table.style = "Light Grid Accent 1"
-        hdr = table.rows[0].cells
-        hdr[0].text, hdr[1].text, hdr[2].text = "Nom", "Domaine", "Description"
-        for d in content["data_dictionary"]:
-            row = table.add_row().cells
-            row[0].text, row[1].text, row[2].text = d["name"], d["domain"], d["description"]
-    else:
-        doc.add_paragraph("Aucune entité documentée pour le moment.")
-
-    doc.add_heading("5. User Stories", level=1)
-    for us in content["user_stories"]:
-        doc.add_paragraph(f"{us['requirement_key']} — {us['story']}", style="List Bullet")
-
-    doc.add_heading("6. Plan de test", level=1)
-    if content["test_plan"]:
-        table = doc.add_table(rows=1, cols=4)
-        table.style = "Light Grid Accent 1"
-        hdr = table.rows[0].cells
-        hdr[0].text, hdr[1].text, hdr[2].text, hdr[3].text = (
-            "Exigence", "Cas de test", "Priorité", "Statut",
-        )
-        for t in content["test_plan"]:
-            row = table.add_row().cells
-            row[0].text, row[1].text, row[2].text, row[3].text = (
-                t["requirement_key"], t["test_case"], t["priority"], t["status"],
-            )
-    else:
-        doc.add_paragraph("Aucun cas de test disponible.")
-
-    sec = content["security"]
-    doc.add_heading("7. Sécurité", level=1)
-    if not sec["available"]:
-        doc.add_paragraph(sec["note"])
-    else:
-        doc.add_paragraph(f"Score de sécurité global : {sec['security_score']}/100")
-        table = doc.add_table(rows=1, cols=3)
-        table.style = "Light Grid Accent 1"
-        hdr = table.rows[0].cells
-        hdr[0].text, hdr[1].text, hdr[2].text = "Contrôle", "Statut", "Recommandation"
-        for c in sec["checklist"]:
-            row = table.add_row().cells
-            row[0].text, row[1].text, row[2].text = c["name"], c["status"], c["recommendation"]
-
-    doc.add_heading("8. Déploiement, maintenance et formation", level=1)
-    doc.add_paragraph(f"Déploiement : {content['deployment_notes'] or 'Non documenté.'}")
-    doc.add_paragraph(f"Maintenance / recette : {content['maintenance_notes'] or 'Non documentée.'}")
-    doc.add_paragraph(f"Formation : {content['training_notes'] or 'Non documentée.'}")
+    if cdc.get("points_to_confirm"):
+        doc.add_heading("Points à Valider", level=1)
+        for point in cdc["points_to_confirm"]:
+            doc.add_paragraph(point, style="List Bullet")
 
     style = doc.styles["Normal"]
     style.font.size = Pt(10.5)
-
     buf = io.BytesIO()
     doc.save(buf)
     return buf.getvalue()
@@ -450,35 +379,60 @@ def render_pdf(content: dict) -> bytes:
 def render_business_pdf(content: dict) -> bytes:
     buf = io.BytesIO()
     doc = SimpleDocTemplate(
-        buf, pagesize=A4, topMargin=1.4 * cm, bottomMargin=1.4 * cm, leftMargin=1.5 * cm, rightMargin=1.5 * cm
+        buf,
+        pagesize=A4,
+        topMargin=1.5 * cm,
+        bottomMargin=1.5 * cm,
+        leftMargin=1.8 * cm,
+        rightMargin=1.8 * cm,
     )
     styles = getSampleStyleSheet()
-    title = ParagraphStyle("CompactTitle", parent=styles["Title"], fontSize=14, leading=16)
-    h1 = ParagraphStyle("CompactH1", parent=styles["Heading1"], fontSize=10.5, leading=12, textColor=colors.HexColor("#14532d"), spaceBefore=6, spaceAfter=3)
-    body = ParagraphStyle("CompactBody", parent=styles["BodyText"], fontSize=8.2, leading=10)
 
+    doc_title = ParagraphStyle(
+        "CDCTitle", parent=styles["Title"], fontSize=16, leading=20, textColor=colors.HexColor("#0f172a"), alignment=0, spaceAfter=8
+    )
+    meta_style = ParagraphStyle(
+        "CDCMeta", parent=styles["BodyText"], fontSize=9, leading=12, textColor=colors.HexColor("#475569"), spaceAfter=14
+    )
+    h1 = ParagraphStyle(
+        "CDCH1", parent=styles["Heading1"], fontSize=11, leading=14, textColor=colors.HexColor("#0284c7"), spaceBefore=10, spaceAfter=4, keepWithNext=True
+    )
+    body = ParagraphStyle(
+        "CDCBody", parent=styles["BodyText"], fontSize=9, leading=12.5, textColor=colors.HexColor("#1e293b"), spaceAfter=3
+    )
+    bullet = ParagraphStyle(
+        "CDCBullet", parent=styles["BodyText"], fontSize=9, leading=12.5, textColor=colors.HexColor("#1e293b"), leftIndent=12, spaceAfter=3
+    )
+    confirm_style = ParagraphStyle(
+        "CDCConfirm", parent=styles["BodyText"], fontSize=9, leading=12.5, textColor=colors.HexColor("#b45309"), leftIndent=12, spaceAfter=3
+    )
+
+    p = content["project"]
     cdc = content["cahier_des_charges"]
-    conception = content["conception_mvp"]
+    date_str = content.get("generated_at", "")[:10]
+    org_str = p.get("organization") or "Organisation Client"
+
     story = [
-        Paragraph("Cahier des Charges - Fondation OCP", title),
-        Paragraph(cdc["summary"] or "Resume a confirmer.", body),
-        Paragraph(f"Score de completude : {cdc['completeness_score']}%", body),
+        Paragraph(f"Cahier des Charges — {p['name']}", doc_title),
+        Paragraph(f"<b>Organisation :</b> {org_str} &nbsp;|&nbsp; <b>Date :</b> {date_str} &nbsp;|&nbsp; <b>Complétude :</b> {cdc['completeness_score']}%", meta_style),
+        Spacer(1, 4),
+        Paragraph("RÉSUMÉ ÉXÉCUTIF", h1),
+        Paragraph(cdc["summary"] or "Cadrage fonctionnel du projet.", body),
         Spacer(1, 6),
     ]
-    if cdc["points_to_confirm"]:
-        story.append(Paragraph("Points a confirmer", h1))
-        for point in cdc["points_to_confirm"][:6]:
-            story.append(Paragraph(f"- {point}", body))
 
     for section in cdc["sections"]:
         story.append(Paragraph(section["title"], h1))
-        for item in section["items"][:6]:
-            story.append(Paragraph(f"- {item}", body))
+        for item in section["items"]:
+            clean_item = item.lstrip("•- ").strip()
+            story.append(Paragraph(f"• {clean_item}", bullet))
+        story.append(Spacer(1, 4))
 
-    story.append(Paragraph("Conception MVP", h1))
-    story.append(Paragraph(conception["summary"], body))
-    story.append(Paragraph("Modules : " + ", ".join(conception["modules"][:10]), body))
-    story.append(Paragraph("Diagramme Mermaid unique disponible dans les exports Markdown et LaTeX.", body))
+    if cdc.get("points_to_confirm"):
+        story.append(Paragraph("POINTS À VALIDER", h1))
+        for point in cdc["points_to_confirm"]:
+            story.append(Paragraph(f"⚠️ {point}", confirm_style))
 
     doc.build(story)
     return buf.getvalue()
+

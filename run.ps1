@@ -1,103 +1,110 @@
 # ==============================================================================
-# FOCP Secure Requirements Studio v2 - One-Click Runner (Windows / PowerShell)
-# Run with:  ./run.ps1   or   .\run.bat
+# FOCP Secure Requirements Studio — One-Click Unified Runner (PowerShell)
 # ==============================================================================
 
-$Host.UI.RawUI.WindowTitle = "FOCP SRS - Starting..."
+$ErrorActionPreference = "Stop"
 
-Write-Host ""
-Write-Host "=======================================================" -ForegroundColor Cyan
-Write-Host "   FOCP Secure Requirements Studio v2 - Starting Up   " -ForegroundColor Green
-Write-Host "=======================================================" -ForegroundColor Cyan
-Write-Host ""
-
-# ── 1. Ensure backend .env exists ─────────────────────────────────────────────
-if (-not (Test-Path "backend/.env")) {
-    Write-Host "[1/4] Copying backend/.env.example -> backend/.env..." -ForegroundColor Yellow
-    Copy-Item "backend/.env.example" "backend/.env"
-} else {
-    Write-Host "[1/4] backend/.env already present." -ForegroundColor Green
-}
-
-# ── 2. Install backend dependencies (Poetry) ─────────────────────────────────
-Write-Host ""
-Write-Host "[2/4] Ensuring backend Python dependencies are installed..." -ForegroundColor Yellow
-$poetryOk = $false
-if (Get-Command "poetry" -ErrorAction SilentlyContinue) {
-    Push-Location "backend"
-    poetry install --no-interaction 2>$null | Out-Null
-    $poetryOk = $true
-    Pop-Location
-} elseif (Get-Command "python" -ErrorAction SilentlyContinue) {
-    Push-Location "backend"
-    python -m poetry install --no-interaction 2>$null | Out-Null
-    $poetryOk = $true
-    Pop-Location
-}
-if ($poetryOk) {
-    Write-Host "[OK] Backend dependencies ready." -ForegroundColor Green
-} else {
-    Write-Host "[X] Poetry not found. Install from https://python-poetry.org" -ForegroundColor Red
-}
-
-# ── 3. Check AI provider configuration ───────────────────────────────────
-Write-Host ""
-Write-Host "[3/4] Checking AI provider configuration..." -ForegroundColor Yellow
-Write-Host "[OK] AI provider settings will be loaded from backend/.env" -ForegroundColor Green
-Write-Host "[INFO] If using Google Gemini, set GEMINI_API_KEY in backend/.env" -ForegroundColor Cyan
-Write-Host ""
-Write-Host "[INFO] The application supports Gemini or template fallback only." -ForegroundColor Cyan
-
-# ── 4. Detect Docker or start locally ────────────────────────────────────────
-Write-Host ""
-Write-Host "[4/4] Detecting orchestration mode..." -ForegroundColor Yellow
-
-$dockerRunning = $false
-try {
-    docker info 2>&1 | Out-Null
-    if ($LASTEXITCODE -eq 0) { $dockerRunning = $true }
-} catch {}
-
-if ($dockerRunning) {
+function Write-Banner {
     Write-Host ""
-    Write-Host "[DOCKER] Launching with Docker Compose..." -ForegroundColor Green
-    Write-Host "    App     : http://localhost:3000" -ForegroundColor Cyan
-    Write-Host "    API     : http://localhost:8000/api/v1" -ForegroundColor Cyan
+    Write-Host "=======================================================" -ForegroundColor Cyan
+    Write-Host "   FOCP Secure Requirements Studio -- Starting Up       " -ForegroundColor Green
     Write-Host "=======================================================" -ForegroundColor Cyan
     Write-Host ""
-    docker compose up --build
+}
+
+Write-Banner
+
+$RootDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+if (-not $RootDir) { $RootDir = Get-Location }
+
+$BackendDir = Join-Path $RootDir "backend"
+$FrontendDir = Join-Path $RootDir "frontend"
+$EnvFile = Join-Path $BackendDir ".env"
+$EnvExample = Join-Path $BackendDir ".env.example"
+
+# 1. Environment file setup
+if (-not (Test-Path $EnvFile)) {
+    if (Test-Path $EnvExample) {
+        Write-Host "--> [1/4] Copying backend/.env.example to backend/.env..." -ForegroundColor Yellow
+        Copy-Item $EnvExample $EnvFile
+    } else {
+        Write-Host "--> [1/4] Creating basic backend/.env..." -ForegroundColor Yellow
+        "ENVIRONMENT=development`nLOG_LEVEL=INFO" | Out-File -FilePath $EnvFile -Encoding utf8
+    }
 } else {
-    Write-Host "[LOCAL] Docker not running. Starting services in separate windows..." -ForegroundColor Yellow
+    Write-Host "--> [1/4] backend/.env already present." -ForegroundColor Green
+}
 
-    # Determine backend command
-    $backendCmd = "cd backend; python -m poetry run uvicorn app.main:app --reload --port 8000"
-    if (Get-Command "poetry" -ErrorAction SilentlyContinue) {
-        $backendCmd = "cd backend; poetry run uvicorn app.main:app --reload --port 8000"
+# 2. Locate Python executable
+$PythonPath = ""
+$VenvPy1 = Join-Path $RootDir ".venv\Scripts\python.exe"
+$VenvPy2 = Join-Path $BackendDir ".venv\Scripts\python.exe"
+
+if (Test-Path $VenvPy1) {
+    $PythonPath = $VenvPy1
+} elseif (Test-Path $VenvPy2) {
+    $PythonPath = $VenvPy2
+} else {
+    $SysPy = Get-Command python -ErrorAction SilentlyContinue
+    if ($SysPy) {
+        $PythonPath = $SysPy.Source
+    } else {
+        Write-Host "[ERROR] Python interpreter not found. Please install Python 3.12+." -ForegroundColor Red
+        exit 1
     }
+}
+Write-Host "--> [2/4] Using Python: $PythonPath" -ForegroundColor Green
 
-    Write-Host "    [FastAPI] Starting on http://localhost:8000 ..." -ForegroundColor Green
-    Start-Process powershell -ArgumentList "-NoExit", "-Command", "$backendCmd"
+# 3. Frontend node check
+if (-not (Get-Command node -ErrorAction SilentlyContinue)) {
+    Write-Host "[ERROR] Node.js is required but not installed." -ForegroundColor Red
+    exit 1
+}
+Write-Host "--> [3/4] Node.js environment detected." -ForegroundColor Green
 
-    Start-Sleep -Seconds 2
+# 4. Launch Services
+Write-Host ""
+Write-Host "--> [4/4] Launching FastAPI Backend and Next.js Frontend..." -ForegroundColor Yellow
+Write-Host "--> Starting FastAPI backend on http://localhost:8000 ..." -ForegroundColor Green
 
-    Write-Host "    [Next.js] Starting on http://localhost:3000 ..." -ForegroundColor Green
-    Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd frontend; npm run dev"
+$backendJob = Start-Process -FilePath $PythonPath -ArgumentList "-m", "uvicorn", "app.main:app", "--reload", "--port", "8000" -WorkingDirectory $BackendDir -PassThru
 
-    # Open browser after services have time to boot
-    if (Get-Command "Start-ThreadJob" -ErrorAction SilentlyContinue) {
-        Start-ThreadJob -ScriptBlock {
-            Start-Sleep -Seconds 7
-            Start-Process "http://localhost:3000"
-        } | Out-Null
+Write-Host "--> Starting Next.js frontend on http://localhost:3000 ..." -ForegroundColor Green
+$npmCmd = (Get-Command npm.cmd -ErrorAction SilentlyContinue).Source
+if (-not $npmCmd) { $npmCmd = "npm" }
+$frontendJob = Start-Process -FilePath $npmCmd -ArgumentList "run", "dev" -WorkingDirectory $FrontendDir -PassThru
+
+# Open Browser in background after short delay
+Start-Job -ScriptBlock {
+    Start-Sleep -Seconds 5
+    Start-Process "http://localhost:3000"
+} | Out-Null
+
+Write-Host ""
+Write-Host "=======================================================" -ForegroundColor Green
+Write-Host " Everything started successfully!                       " -ForegroundColor Green
+Write-Host " App     : http://localhost:3000" -ForegroundColor Cyan
+Write-Host " API     : http://localhost:8000/api/v1" -ForegroundColor Cyan
+Write-Host " AI Docs : http://localhost:8000/docs" -ForegroundColor Cyan
+Write-Host "=======================================================" -ForegroundColor Green
+Write-Host " Press Ctrl+C in this window to stop all services." -ForegroundColor Gray
+Write-Host ""
+
+try {
+    while ($true) {
+        if ($backendJob.HasExited -or $frontendJob.HasExited) {
+            Write-Host "[WARN] One of the services has stopped." -ForegroundColor Yellow
+            break
+        }
+        Start-Sleep -Seconds 1
     }
-
-    Write-Host ""
-    Write-Host "=======================================================" -ForegroundColor Green
-    Write-Host " Everything started in separate windows!" -ForegroundColor Green
-    Write-Host " App     : http://localhost:3000" -ForegroundColor Cyan
-    Write-Host " API     : http://localhost:8000/api/v1" -ForegroundColor Cyan
-    Write-Host " AI docs : http://localhost:8000/docs" -ForegroundColor Cyan
-    Write-Host "=======================================================" -ForegroundColor Green
-    Write-Host ""
-    Write-Host "Close the spawned windows to stop backend/frontend." -ForegroundColor Gray
+} finally {
+    Write-Host "`nStopping backend and frontend services..." -ForegroundColor Yellow
+    if ($backendJob -and -not $backendJob.HasExited) {
+        Stop-Process -Id $backendJob.Id -Force -ErrorAction SilentlyContinue
+    }
+    if ($frontendJob -and -not $frontendJob.HasExited) {
+        Stop-Process -Id $frontendJob.Id -Force -ErrorAction SilentlyContinue
+    }
+    Write-Host "All services stopped clean." -ForegroundColor Green
 }

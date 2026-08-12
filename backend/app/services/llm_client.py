@@ -1,9 +1,4 @@
-"""AI client for the Interview Engine.
-
-The application supports two modes:
-- TemplateLLMClient: deterministic, no network calls.
-- GeminiLLMClient: Google Gemini assistant for adaptive interview reasoning.
-"""
+"""AI client for the business interview engine."""
 
 import asyncio
 import json
@@ -12,7 +7,6 @@ from typing import Protocol
 
 from pydantic import BaseModel
 
-from app.domain import focp_knowledge
 from app.logging import get_logger
 from app.models.knowledge_graph import KnowledgeGraphNode
 from app.services.ai_settings import EffectiveAISettings, load_ai_settings
@@ -92,12 +86,13 @@ class TemplateLLMClient:
         )
 
 
-_CONSULTANT_SYSTEM_PROMPT = """Tu es un consultant metier senior travaillant sur \
-une plateforme de gestion des beneficiaires de l'Axe Economie Sociale et Solidaire \
-de la Fondation OCP. Tu t'adresses a des collaborateurs non techniques. Pose des \
-questions simples, courtes, concretes et comprehensibles. Ne demande jamais de \
-choisir une technologie, une architecture, un protocole, une base de donnees, une \
-API ou un mecanisme de cybersecurite technique."""
+_CONSULTANT_SYSTEM_PROMPT = """Tu es un Business Analyst senior qui conduit un court entretien de besoins avec un employe non technique.
+Ton objectif est de comprendre ce que l'organisation attend d'une application.
+Tu n'interroges pas un developpeur.
+Ne demande jamais de langage, base de donnees, API, protocole d'authentification, architecture, cloud, deploiement, concurrence, ORM, microservices ou autre detail d'implementation.
+Pose une seule question courte, simple et precise, en francais.
+Utilise deja les reponses fournies, evite les repetitions, et respecte un maximum absolu de 30 questions.
+Traduis les reponses metier en exigences fonctionnelles, securite et contraintes techniques uniquement en interne."""
 
 
 def _load_google_genai():
@@ -149,16 +144,7 @@ class GeminiLLMClient:
         history_text = "\n".join(
             f"Q: {h['question']}\nR: {h['answer']}" for h in history[-6:]
         ) or "(aucun echange precedent)"
-        prompt = f"""Tu travailles pour la Fondation OCP, Axe Eco-Social.
-Tu connais les cooperatives marocaines, beneficiaires directs et indirects, ESG, ODD,
-reporting CSV mensuel, statistiques, tableaux de bord, architecture logicielle et cybersecurite.
-
-Contexte OCP de reference :
-- Regions : {', '.join(focp_knowledge.MOROCCAN_REGIONS[:5])}...
-- ODD : {', '.join(focp_knowledge.SUSTAINABLE_DEVELOPMENT_GOALS[:3])}...
-- Beneficiaires : {', '.join(focp_knowledge.BENEFICIARY_CATEGORIES)}
-
-Concept a explorer: {node.label}
+        prompt = f"""Concept a explorer: {node.label}
 Description: {node.description}
 Domaine: {node.domain}
 Completion actuelle: {node.completion}%
@@ -167,12 +153,12 @@ Historique recent:
 {history_text}
 
 Question de reference a respecter si aucune adaptation utile n'est necessaire:
-{planned_question.question if planned_question else node.label}
+{planned_question.get("question") if isinstance(planned_question, dict) else planned_question.question if planned_question else node.label}
 
 Pose UNE question de business analyst senior, adaptee aux reponses precedentes.
-La question doit rester non technique, en 1 a 2 phrases maximum.
+La question doit rester non technique et faire moins de 25 mots.
 Tu peux proposer des choix simples, mais l'utilisateur doit pouvoir repondre librement.
-Ne mentionne pas SQL, API, JWT, OAuth2, RBAC, ABAC, Docker, architecture, chiffrement, transactions ou backend."""
+Ne mentionne pas SQL, API, JWT, OAuth2, RBAC, ABAC, Docker, Kubernetes, architecture, chiffrement, transactions ou backend."""
         try:
             question = await self._call(_CONSULTANT_SYSTEM_PROMPT, prompt)
             return question.strip() or await TemplateLLMClient().generate_question(node, history)
@@ -187,17 +173,13 @@ Ne mentionne pas SQL, API, JWT, OAuth2, RBAC, ABAC, Docker, architecture, chiffr
         answer: str,
         history: list[dict],
     ) -> AnswerInterpretation:
-        prompt = f"""Analyse cette reponse pour le projet Fondation OCP Axe Eco-Social.
+        prompt = f"""Analyse cette reponse pour un cahier des charges generique.
 Concept: {node.label} ({node.description})
 Question: {question}
 Reponse: {answer}
 
-Contexte OCP : Pense aux categories de beneficiaires ({', '.join(focp_knowledge.BENEFICIARY_CATEGORIES)}),
-aux conventions ({', '.join(focp_knowledge.CONVENTION_TYPES)}), et aux periodes de reporting.
-
-Inferer les impacts sur: exigences fonctionnelles, exigences techniques, cybersecurite,
-architecture, base de donnees, API, roles applicatifs, tableaux de bord, risques,
-tests, deploiement, maintenance et documents.
+Inferer les impacts sur: exigences fonctionnelles, roles, donnees, documents, tableaux de bord, rapports, securite metier, contraintes, MVP et criteres d'acceptation.
+Ne propose pas de fonctionnalite metier non mentionnee par l'utilisateur.
 
 Reponds STRICTEMENT en JSON valide:
 {{
