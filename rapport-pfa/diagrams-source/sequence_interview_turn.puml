@@ -1,0 +1,48 @@
+@startuml
+autonumber
+skinparam shadowing false
+skinparam monochrome false
+
+actor "Analyste / Utilisateur" as User
+participant "Next.js Frontend\n(Client React)" as Front
+participant "Interview Router\n(FastAPI)" as Router
+participant "Interview Service" as IntService
+participant "LLM Client\n(Gemini / Template)" as LLM
+participant "Knowledge Graph\nService" as KGService
+participant "Requirement\nService" as ReqService
+database "Base de Données\n(SQLite / PostgreSQL)" as DB
+
+User -> Front : Saisit la réponse à la question courante
+Front -> Router : POST /projects/{id}/interview/answer {answer_text}
+Router -> IntService : submit_answer(project_id, answer_text)
+IntService -> KGService : get_graph(project_id)
+KGService -> DB : SELECT nodes FROM knowledge_graph_nodes
+DB --> KGService : Liste des nœuds
+KGService --> IntService : Nœud courant ciblé
+
+alt Mode AI activé
+    IntService -> LLM : interpret_answer(node, question, answer, history)
+    LLM --> IntService : Interprétation (données extraites, deltas complétude/confiance)
+else Mode Classique (Template)
+    IntService -> LLM : interpret_answer_template(...)
+    LLM --> IntService : Données structurées déterministes
+end
+
+IntService -> KGService : apply_update(project_id, concept_key, captured_data, deltas)
+KGService -> DB : UPDATE knowledge_graph_nodes SET completion, confidence, captured_data
+DB --> KGService : Nœud mis à jour
+KGService --> IntService : updated_node
+
+IntService -> ReqService : generate_for_node(project_id, updated_node)
+ReqService -> DB : UPSERT INTO requirements (tracés au concept_key)
+DB --> ReqService : Exigences enregistrées
+
+IntService -> DB : INSERT INTO interview_turns (sequence, answer, data)
+IntService -> IntService : _ask_next_question() (recherche prochain nœud dans l'ontologie)
+IntService -> DB : UPDATE interview_sessions SET pending_question, pending_concept_key
+DB --> IntService : Session synchronisée
+
+IntService --> Router : Payload {updated_node, next_question, consultant_note}
+Router --> Front : Réponse JSON 200 OK
+Front --> User : Affichage dynamique de la nouvelle question et mise à jour de la jauge
+@enduml

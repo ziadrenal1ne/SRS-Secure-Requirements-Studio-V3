@@ -3,163 +3,136 @@
 import * as React from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { motion } from "framer-motion";
-import {
-  ArrowLeft,
-  Download,
-  ChevronDown,
-  ShieldCheck,
-  ListTree,
-  Rows3,
-  Rows4,
-  FileText,
-} from "lucide-react";
+import { ArrowLeft, Clipboard, Download, FileText, Loader2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { EmptyState } from "@/components/ui/empty-state";
-import { Dialog } from "@/components/ui/dialog";
-import { Toc } from "@/components/document/toc";
-import { DocumentSection } from "@/components/document/document-section";
-import { projects, documentSections } from "@/lib/mock-data";
-import { formatDate } from "@/lib/utils";
+import { ApiError, documentsApi, type GeneratedDocument } from "@/lib/api";
+
+type CdcSection = { title: string; items: string[] };
+type CdcContent = {
+  generated_at?: string;
+  project?: { name?: string; status?: string };
+  cahier_des_charges?: {
+    summary?: string;
+    sections?: CdcSection[];
+    points_to_confirm?: string[];
+  };
+};
 
 export default function GeneratedDocumentPage() {
   const params = useParams<{ id: string }>();
-  const project = projects.find((p) => p.id === params.id);
+  const projectId = params.id;
+  const [document, setDocument] = React.useState<GeneratedDocument | null>(null);
+  const [loading, setLoading] = React.useState(true);
+  const [error, setError] = React.useState<string | null>(null);
+  const [downloading, setDownloading] = React.useState<"pdf" | "docx" | null>(null);
 
-  const [activeId, setActiveId] = React.useState(documentSections[0].id);
-  const [openMap, setOpenMap] = React.useState<Record<string, boolean>>(() =>
-    Object.fromEntries(documentSections.map((s) => [s.id, true]))
-  );
-  const [mobileTocOpen, setMobileTocOpen] = React.useState(false);
-  const [downloadOpen, setDownloadOpen] = React.useState(false);
-  const sectionRefs = React.useRef<Record<string, HTMLDivElement | null>>({});
+  const load = React.useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      setDocument(await documentsApi.get(projectId));
+    } catch {
+      try {
+        setDocument(await documentsApi.generate(projectId));
+      } catch (err) {
+        setError(err instanceof ApiError ? err.message : "Une erreur est survenue lors de la génération. Réessayez.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, [projectId]);
 
   React.useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) setActiveId(entry.target.id);
-        });
-      },
-      { rootMargin: "-15% 0px -70% 0px", threshold: 0 }
-    );
-    Object.values(sectionRefs.current).forEach((el) => el && observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+    void load();
+  }, [load]);
 
-  function selectSection(id: string) {
-    setOpenMap((prev) => ({ ...prev, [id]: true }));
-    setMobileTocOpen(false);
-    requestAnimationFrame(() => {
-      sectionRefs.current[id]?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
+  async function regenerate() {
+    setLoading(true);
+    setError(null);
+    try {
+      setDocument(await documentsApi.generate(projectId));
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : "Une erreur est survenue lors de la génération. Réessayez.");
+    } finally {
+      setLoading(false);
+    }
   }
 
-  function toggleAll(expand: boolean) {
-    setOpenMap(Object.fromEntries(documentSections.map((s) => [s.id, expand])));
+  async function download(format: "pdf" | "docx") {
+    setDownloading(format);
+    try {
+      await documentsApi.download(projectId, format);
+    } catch {
+      setError(`Le téléchargement ${format.toUpperCase()} a échoué. Réessayez.`);
+    } finally {
+      setDownloading(null);
+    }
   }
 
-  if (!project) {
-    return (
-      <div className="mx-auto max-w-3xl px-4 py-16">
-        <EmptyState title="Projet introuvable" description="Ce projet n'existe pas ou a été supprimé." />
-      </div>
-    );
-  }
+  const content = (document?.content ?? {}) as CdcContent;
+  const cdc = content.cahier_des_charges;
+  const projectName = content.project?.name ?? "Projet";
+  const generatedAt = content.generated_at ? new Date(content.generated_at).toLocaleDateString("fr-FR") : "";
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-20 border-b border-border bg-surface/85 backdrop-blur-md">
-        <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 lg:px-8">
-          <Link href={`/projects/${project.id}/summary`} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-2 hover:text-foreground">
-            <ArrowLeft className="h-4.5 w-4.5" />
+    <main className="min-h-screen bg-background">
+      <header className="sticky top-0 z-20 border-b border-border bg-surface/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-5xl items-center gap-3 px-4 py-4">
+          <Link href={`/projects/${projectId}/interview`} className="flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-surface-2 hover:text-foreground">
+            <ArrowLeft className="h-4 w-4" />
           </Link>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold">{project.shortName} — Cahier des Charges</p>
-            <p className="text-xs text-muted-foreground">Généré le {formatDate(project.updatedAt)} · Version 1.3</p>
+            <p className="truncate text-sm font-semibold">Cahier des Charges</p>
+            <p className="text-xs text-muted-foreground">{projectName} · Version 1.0{generatedAt ? ` · Généré le ${generatedAt}` : ""}</p>
           </div>
-          <button
-            onClick={() => setMobileTocOpen(true)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-surface-2 lg:hidden"
-          >
-            <ListTree className="h-4 w-4" />
-          </button>
-          <div className="relative hidden sm:block">
-            <Button variant="secondary" size="sm" className="gap-1.5" onClick={() => setDownloadOpen((o) => !o)}>
-              <Download className="h-3.5 w-3.5" />
-              Télécharger
-              <ChevronDown className="h-3.5 w-3.5" />
-            </Button>
-            {downloadOpen && (
-              <div className="absolute right-0 z-30 mt-2 w-44 overflow-hidden rounded-xl border border-border bg-surface shadow-lg">
-                <button onClick={() => setDownloadOpen(false)} className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-sm hover:bg-surface-2">
-                  <FileText className="h-3.5 w-3.5 text-muted-foreground" /> Format PDF
-                </button>
-                <button onClick={() => setDownloadOpen(false)} className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-sm hover:bg-surface-2">
-                  <FileText className="h-3.5 w-3.5 text-muted-foreground" /> Format Word
-                </button>
-              </div>
-            )}
-          </div>
+          <Button variant="secondary" size="sm" onClick={regenerate} disabled={loading} className="gap-2">
+            <RefreshCw className="h-4 w-4" /> Régénérer
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => download("pdf")} disabled={!!downloading} className="gap-2">
+            {downloading === "pdf" ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />} PDF
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => download("docx")} disabled={!!downloading} className="gap-2">
+            {downloading === "docx" ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileText className="h-4 w-4" />} Word
+          </Button>
         </div>
       </header>
 
-      <div className="mx-auto flex max-w-7xl gap-8 px-4 py-8 lg:px-8">
-        {/* Desktop TOC */}
-        <aside className="sticky top-24 hidden h-fit w-64 shrink-0 rounded-2xl border border-border bg-surface p-3 lg:block">
-          <Toc sections={documentSections} activeId={activeId} onSelect={selectSection} />
-        </aside>
-
-        {/* Mobile TOC dialog */}
-        <Dialog open={mobileTocOpen} onClose={() => setMobileTocOpen(false)} title="Sommaire">
-          <Toc sections={documentSections} activeId={activeId} onSelect={selectSection} />
-        </Dialog>
-
-        {/* Document content */}
-        <div className="min-w-0 flex-1">
-          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} className="rounded-2xl border border-border bg-gradient-to-br from-primary-soft/60 to-accent-soft/40 p-6 sm:p-8">
-            <Badge variant="primary">Cahier des Charges — Généré automatiquement</Badge>
-            <h1 className="mt-3 font-display text-2xl font-bold tracking-tight sm:text-3xl">{project.name}</h1>
-            <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{project.description}</p>
-            <div className="mt-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-              <span>Porteur : <strong className="text-foreground">{project.owner.name}</strong></span>
-              <span>Département : <strong className="text-foreground">{project.department}</strong></span>
-              <span className="flex items-center gap-1.5 font-medium text-accent">
-                <ShieldCheck className="h-3.5 w-3.5" /> Score sécurité {project.securityScore}/100
-              </span>
+      <section className="mx-auto max-w-5xl px-4 py-8">
+        {loading && <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Génération en cours...</p>}
+        {error && <p className="rounded-lg border border-warning/30 bg-warning-soft px-3 py-2 text-sm text-warning">{error}</p>}
+        {!loading && cdc && (
+          <article className="bg-surface px-8 py-10 shadow-sm ring-1 ring-border sm:px-12">
+            <div className="border-b border-border pb-6">
+              <p className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Cahier des Charges</p>
+              <h1 className="mt-2 font-display text-3xl font-semibold tracking-tight">{projectName}</h1>
+              <p className="mt-2 text-sm text-muted-foreground">Version 1.0 · Généré le {generatedAt}</p>
             </div>
-          </motion.div>
-
-          <div className="mt-5 flex items-center justify-between">
-            <div className="flex items-center gap-3 text-xs text-muted-foreground">
-              <span className="flex items-center gap-1.5"><Badge variant="danger">Critique</Badge></span>
-              <span className="flex items-center gap-1.5"><Badge variant="warning">Haute</Badge></span>
-              <span className="flex items-center gap-1.5"><Badge variant="default">Moyenne</Badge></span>
+            {cdc.summary && <p className="mt-6 leading-7 text-foreground/85">{cdc.summary}</p>}
+            <div className="mt-8 grid gap-7">
+              {cdc.sections?.map((section) => (
+                <section key={section.title}>
+                  <h2 className="font-display text-lg font-semibold">{section.title}</h2>
+                  <ul className="mt-3 grid gap-2 text-sm leading-6 text-foreground/85">
+                    {section.items.map((item, index) => <li key={`${section.title}-${index}`}>- {item}</li>)}
+                  </ul>
+                </section>
+              ))}
             </div>
-            <div className="flex items-center gap-1.5">
-              <Button variant="ghost" size="sm" className="gap-1.5" onClick={() => toggleAll(true)}>
-                <Rows4 className="h-3.5 w-3.5" /> Tout développer
-              </Button>
-              <Button variant="ghost" size="sm" className="gap-1.5" onClick={() => toggleAll(false)}>
-                <Rows3 className="h-3.5 w-3.5" /> Tout réduire
-              </Button>
+            {!!cdc.points_to_confirm?.length && (
+              <section className="mt-8 border-t border-border pt-5">
+                <h2 className="font-display text-lg font-semibold">Points à valider</h2>
+                <ul className="mt-3 grid gap-2 text-sm leading-6 text-foreground/85">
+                  {cdc.points_to_confirm.map((point, index) => <li key={index}>- {point}</li>)}
+                </ul>
+              </section>
+            )}
+            <div className="mt-8 flex flex-wrap gap-2 border-t border-border pt-5">
+              <Link href={`/projects/${projectId}/interview`}><Button variant="secondary">Modifier les réponses</Button></Link>
+              <Button variant="secondary" onClick={() => navigator.clipboard.writeText(JSON.stringify(cdc, null, 2))} className="gap-2"><Clipboard className="h-4 w-4" /> Copier</Button>
             </div>
-          </div>
-
-          <div className="mt-4 flex flex-col gap-4">
-            {documentSections.map((section) => (
-              <DocumentSection
-                key={section.id}
-                section={section}
-                open={!!openMap[section.id]}
-                onToggle={() => setOpenMap((prev) => ({ ...prev, [section.id]: !prev[section.id] }))}
-                sectionRef={(el) => { sectionRefs.current[section.id] = el; }}
-              />
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
+          </article>
+        )}
+      </section>
+    </main>
   );
 }

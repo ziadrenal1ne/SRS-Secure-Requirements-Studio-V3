@@ -1,0 +1,86 @@
+@startuml
+skinparam componentStyle uml2
+skinparam shadowing false
+skinparam defaultFontName "Helvetica,Arial,sans-serif"
+skinparam defaultFontSize 11
+
+skinparam package {
+    BackgroundColor #F8FAFC
+    BorderColor #1B3A66
+    BorderThickness 1.2
+}
+
+skinparam component {
+    BackgroundColor #FFFFFF
+    BorderColor #1B3A66
+    BorderThickness 1.2
+}
+
+skinparam database {
+    BackgroundColor #EAF4EC
+    BorderColor #1E7A3D
+    BorderThickness 1.2
+}
+
+skinparam cloud {
+    BackgroundColor #F5F3FF
+    BorderColor #6D28D9
+    BorderThickness 1.2
+}
+
+package "1. Couche Présentation (Next.js 15 / React 19 / Tailwind v4)" as PKG_Frontend {
+    [UI Primitives & Design System] as UI
+    [Interview Stepper / Wizard] as Wizard
+    [Dashboard & Analytics] as Dash
+    [Typed API Client (Fetch)] as APIClient
+    
+    Wizard --> APIClient
+    Dash --> APIClient
+    UI <-- Wizard
+}
+
+package "2. Couche Exposition API (FastAPI / Python 3.12)" as PKG_API {
+    [API Routers / Endpoints] as Routers
+    [Pydantic v2 Schemas & Validation] as Schemas
+    
+    Routers --> Schemas
+}
+
+package "3. Couche Métier & Moteurs Spécialisés" as PKG_Domain {
+    [Interview Engine (Dual-Mode)] as IntEngine
+    [Knowledge Graph Engine (39 concepts)] as KGEngine
+    [Security Engine (STRIDE / RBAC)] as SecEngine
+    [Review & Audit Engine (+100 règles)] as RevEngine
+    [Document Generator (Multi-Format)] as DocEngine
+    
+    IntEngine --> KGEngine : alimente
+    KGEngine --> SecEngine : expose données
+    SecEngine --> RevEngine : audite conformité
+    RevEngine --> DocEngine : autorise export
+}
+
+package "4. Couche Données & Persistance" as PKG_Data {
+    [SQLAlchemy 2.0 Async ORM] as ORM
+    database "PostgreSQL / SQLite" as DB
+    
+    ORM --> DB : SQL asyncpg / aiosqlite
+}
+
+cloud "Services Externes" as PKG_Cloud {
+    [Google Gemini AI API] as Gemini
+}
+
+' Relations inter-couches hiérarchiques
+APIClient --> Routers : HTTPS / JSON REST
+Routers --> IntEngine
+Routers --> KGEngine
+Routers --> SecEngine
+Routers --> RevEngine
+Routers --> DocEngine
+
+IntEngine --> Gemini : Prompt contextuel (HTTPS)
+KGEngine --> ORM
+SecEngine --> ORM
+DocEngine --> ORM
+
+@enduml

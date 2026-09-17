@@ -19,7 +19,6 @@ from datetime import UTC, datetime
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.domain import focp_knowledge
 from app.exceptions import NotFoundError
 from app.models.generated_document import GeneratedDocument
 from app.models.interview import InterviewSession, InterviewTurn
@@ -133,7 +132,18 @@ class DocumentGeneratorService:
             cdc_model, int(completion.get("overall_completion", 100))
         )
         mvp_diagram = self._build_mvp_diagram(cdc_model, project)
-        conception_mvp = self._build_conception_mvp(cdc_model, cdc, mvp_diagram)
+        data_dictionary = [
+            {"name": item, "domain": "Métier", "description": item}
+            for item in cdc_model.data_requirements
+        ]
+        user_stories = [
+            {"requirement_key": f"US-{idx:03d}", "story": f"En tant qu'utilisateur, je veux {feature.lower()}."}
+            for idx, feature in enumerate(cdc_model.functional_requirements[:8], start=1)
+        ]
+        test_plan = [
+            {"requirement_key": f"ACC-{idx:03d}", "test_case": criterion, "priority": "haute", "status": "à tester"}
+            for idx, criterion in enumerate(cdc_model.acceptance_criteria, start=1)
+        ]
 
         return {
             "generated_at": datetime.now(UTC).isoformat(),
@@ -148,12 +158,8 @@ class DocumentGeneratorService:
             "completeness": completion,
             "executive_summary": self._build_executive_summary(by_key, project),
             "cahier_des_charges": cdc,
-            "conception_mvp": {"summary": "", "modules": [], "flows": [], "data": [], "security": [], "diagram": ""},
-            "governance_and_esg": {
-                "sdgs": focp_knowledge.SUSTAINABLE_DEVELOPMENT_GOALS,
-                "esg_indicators": focp_knowledge.ESG_INDICATORS,
-                "conventions": focp_knowledge.CONVENTION_TYPES,
-            },
+            "conception_mvp": self._build_conception_mvp(cdc_model, cdc, mvp_diagram),
+            "governance_and_esg": {"sdgs": [], "esg_indicators": [], "conventions": []},
             "stakeholders": stakeholders,
             "requirements_by_type": requirements_by_type,
             "requirement_type_labels": REQUIREMENT_TYPE_LABELS,
@@ -168,14 +174,8 @@ class DocumentGeneratorService:
             "diagrams": {"mvp_diagram_mermaid": mvp_diagram},
             "security": self._security_section(security),
             "unimplemented_sections": [
-                {
-                    "name": "Diagramme de processus BPMN 2.0",
-                    "reason": "Non genere dans le Cahier des Charges simplifie V2.",
-                },
-                {
-                    "name": "Maquettes / wireframes d'interface",
-                    "reason": "Non generees dans le Cahier des Charges simplifie V2.",
-                },
+                {"name": "Diagramme de processus BPMN 2.0", "reason": "Non affiché dans le Cahier des Charges fonctionnel simplifié."},
+                {"name": "Maquettes d'interface", "reason": "Non affichées dans le Cahier des Charges fonctionnel simplifié."},
             ],
         }
 
@@ -216,6 +216,19 @@ class DocumentGeneratorService:
             "sensitive_information": _answer(by_key.get("security.data_classification")),
             "mvp": _answer(by_key.get("business.scope_boundaries")),
         }
+
+    def _build_executive_summary(
+        self, by_key: dict[str, KnowledgeGraphNode], project: Project
+    ) -> str:
+        objective = _answer(by_key.get("business.objective")) or _answer(
+            by_key.get("business.success_metrics")
+        )
+        problem = _answer(by_key.get("business.scope_boundaries"))
+        if objective and problem:
+            return f"{objective} {problem}"
+        if objective:
+            return objective
+        return f"Le besoin du projet {project.name} n'a pas encore été documenté par le questionnaire métier."
 
     def _missing_confirmation_points(self, grouped: dict[str, list[str]]) -> list[str]:
         required = {

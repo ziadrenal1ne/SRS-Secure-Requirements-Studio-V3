@@ -1,0 +1,252 @@
+\chapter{Spécification des besoins}
+\markboth{CHAPITRE 2. SPÉCIFICATION DES BESOINS}{CHAPITRE 2. SPÉCIFICATION DES BESOINS}
+
+\section{Introduction}
+
+La spécification formelle des besoins constitue une étape déterminante pour concevoir un système logiciel robuste, cohérent et hautement sécurisé. Ce chapitre détaille l'ensemble des exigences fonctionnelles, non fonctionnelles et de cybersécurité liées à la \textbf{conception d'une plateforme de gestion des bénéficiaires de l'axe social et solidaire au sein de la Fondation OCP en intégrant des exigences de cybersécurité}, ainsi que les besoins de l'application logicielle développée (\textbf{Secure Requirements Studio -- SRS}) pour formaliser et générer son Cahier des Charges. Nous présentons également les acteurs en présence ainsi que la modélisation formelle des cas d'utilisation au moyen de fiches descriptives détaillées et du diagramme global des cas d'utilisation UML.
+
+\section{Spécification des besoins fonctionnels}
+
+Les besoins fonctionnels expriment les comportements et les fonctionnalités que le système doit offrir à ses utilisateurs.
+
+\subsection{Besoins de la plateforme cible (Gestion des Bénéficiaires)}
+
+La plateforme cible, telle que formalisée dans le Cahier des Charges final de la Fondation OCP, doit satisfaire les exigences fonctionnelles majeures suivantes :
+\begin{enumerate}
+    \item \textbf{Gestion des coopératives} : Centralisation des profils administratifs, des statuts juridiques, des dirigeants, des coordonnées et des conventions de partenariat pour les 1\,700 coopératives du réseau.
+    \item \textbf{Gestion et déclaration des bénéficiaires} : Recensement rigoureux des bénéficiaires directs et indirects avec distinction des catégories cibles (femmes, jeunes, personnes en situation de handicap, agriculteurs).
+    \item \textbf{Circuit mensuel de soumission et de validation} : Dématérialisation du workflow où chaque représentant de coopérative transmet ses données mensuelles, et où l'administrateur Fondation valide ou rejette la soumission avec un motif obligatoire et traçable.
+    \item \textbf{Cartographie interactive nationale} : Géolocalisation des coopératives sur une carte interactive du Maroc, avec filtrage multi-critères par région, province, secteur d'activité et statut.
+    \item \textbf{Pilotage des indicateurs ESG et ODD} : Consolidation des activités associées aux Objectifs de Développement Durable de l'ONU et calcul des indicateurs d'impact environnemental, social et de gouvernance.
+\end{enumerate}
+
+\subsection{Besoins fonctionnels de l'application logicielle développée (SRS)}
+
+Pour formaliser et générer le Cahier des Charges répondant au besoin ci-dessus, l'application logicielle SRS que nous avons développée intègre les modules fonctionnels suivants :
+
+\subsubsection{Gestion des projets et du graphe de connaissances ontologique}
+Le système permet d'instancier un projet de spécification en initialisant un graphe de connaissances (\textit{Knowledge Graph}) comprenant 39 concepts clés interconnectés, répartis en 15 domaines métier (\texttt{business}, \texttt{beneficiaries}, \texttt{security}, \texttt{database}, \texttt{deployment}, etc.). L'utilisateur y suit en temps réel les indices de complétude et de confiance de chaque concept.
+
+\subsubsection{Moteur d'interview adaptative et capture des besoins}
+L'application propose deux modes d'élicitation : un mode questionnaire guidé déterministe et un mode interview adaptative assistée par grand modèle de langage (Google Gemini). Le moteur interprète les réponses, extrait automatiquement les règles de gestion et met à jour l'ontologie du projet.
+
+\subsubsection{Moteur d'exigences et matrice de traçabilité}
+À partir des données consolidées du graphe de connaissances, le système dérive automatiquement un catalogue d'exigences typées (exigences métier BRD, fonctionnelles FRD, non fonctionnelles NFR, et exigences de sécurité). Chaque exigence conserve un lien explicite de traçabilité avec le concept source (\texttt{source\_concept\_key}).
+
+\subsubsection{Moteur de génération et d'exportation multi-format}
+Le système agrège l'ensemble des exigences, des matrices de sécurité et des règles métier pour composer et exporter le livrable officiel finalisé, notamment au format PDF sous le nom de \texttt{Cahier\_des\_Charges\_FOCP\_V3.pdf}.
+
+\section{Spécification des besoins non fonctionnels}
+
+Les besoins non fonctionnels garantissent la qualité technique, l'ergonomie et la fiabilité du système :
+\begin{itemize}
+    \item \textbf{Performance et réactivité} : Les opérations de mise à jour des données doivent s'exécuter en moins de 100 millisecondes côté API backend.
+    \item \textbf{Ergonomie et convivialité (UI/UX)} : Interface moderne développée sous Next.js 15, responsive et fluide, avec prise en charge dynamique des thèmes sombre et clair.
+    \item \textbf{Modularité et maintenabilité} : Architecture en couches découplées (\textit{Routers $\rightarrow$ Services $\rightarrow$ Repositories $\rightarrow$ Database}), facilitant l'extension vers de nouvelles ontologies.
+    \item \textbf{Fiabilité et disponibilité} : Disponibilité continue du système assurée par un mécanisme de basculement automatique sur le moteur déterministe local en cas de rupture de connectivité avec les API d'IA externes.
+\end{itemize}
+
+\section{Intégration des exigences de cybersécurité}
+
+Conformément à l'intitulé officiel du projet, l'intégration des exigences de cybersécurité constitue une composante transversale et prioritaire de la conception de la plateforme cible et du logiciel développé.
+
+\subsection{Exigences de sécurité de la plateforme cible}
+Les exigences de sécurité formalisées dans le Cahier des Charges de la plateforme de gestion des bénéficiaires comprennent :
+\begin{itemize}
+    \item \textbf{Contrôle d'accès basé sur les rôles (RBAC)} : Cloisonnement strict des espaces où chaque coopérative n'accède qu'à ses propres données, tandis que les administrateurs Fondation disposent d'une vue de supervision globale.
+    \item \textbf{Protection et confidentialité des données personnelles} : Chiffrement des flux (TLS/HTTPS systématique), anonymisation ou pseudonymisation des données sensibles des bénéficiaires, et conformité aux principes d'évaluation d'impact sur la vie privée (PIA).
+    \item \textbf{Traçabilité et non-répudiation} : Journalisation immuable de toutes les actions critiques (connexions, soumissions, validations, rejets motivés, corrections administratives).
+    \item \textbf{Sécurité des fichiers et téléversements} : Validation stricte des extensions et types MIME, limitation de taille et contrôle d'intégrité des pièces justificatives et rapports déposés.
+\end{itemize}
+
+\subsection{Exigences et fonctionnalités de sécurité de l'application développée (SRS)}
+L'application d'ingénierie des exigences intègre les modules de cybersécurité suivants :
+\begin{itemize}
+    \item \textbf{Modélisation automatisée des menaces STRIDE} : Identification systématique des menaces sur chaque composant d'architecture (\textit{Spoofing, Tampering, Repudiation, Information Disclosure, Denial of Service, Elevation of Privilege}).
+    \item \textbf{Évaluation quantitative des risques DREAD} : Calcul d'un score de risque pondéré basé sur les critères de dommage potentiel, reproductibilité, exploitabilité, utilisateurs impactés et découvrabilité.
+    \item \textbf{Moteur d'audit et règles de conformité de sécurité} : Évaluation automatique de la présence des contrôles de sécurité indispensables (authentification, RBAC, chiffrement, logs) conditionnant l'homologation du projet.
+\end{itemize}
+
+\section{Présentation des cas d'utilisation}
+
+\subsection{Présentation des acteurs}
+
+Le tableau \ref{tab:acteurs} récapitule les acteurs interagissant avec l'application logicielle développée.
+
+\begin{table}[H]
+\centering
+\caption{Acteurs de l'application logicielle d'ingénierie des exigences}
+\label{tab:acteurs}
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{focpgreen!18}
+\textbf{Acteur} & \textbf{Rôle et Responsabilités dans l'Application} \\
+\hline
+\textbf{Ingénieur Exigences / Analyste} & Utilisateur principal du studio. Il initialise les projets, conduit les sessions d'interview, affine les exigences dérivées, lance les analyses de cybersécurité et valide les règles d'audit. \\
+\hline
+\textbf{Responsable de Projet FOCP} & Décideur métier au sein de la Fondation OCP. Il consulte les tableaux de bord de cadrage, examine les exigences fonctionnelles et télécharge les cahiers des charges validés. \\
+\hline
+\textbf{Système LLM (Google Gemini)} & Acteur secondaire externe. Il assiste l'interview d'élicitation en formulant des questions contextuelles et en extrayant les entités métier à partir des réponses formulées. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\subsection{Description des cas d'utilisation}
+
+Nous présentons ci-après les fiches descriptives formelles des cas d'utilisation majeurs de notre système.
+
+\begin{table}[H]
+\centering
+\caption{Description du cas d'utilisation « Conduire une session d'interview d'élicitation »}
+\label{tab:uc_interview}
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{focpgreen!18}
+\textbf{Cas d'utilisation} & Conduire une session d'interview d'élicitation \\
+\hline
+\textbf{Acteur(s)} & Ingénieur Exigences / Analyste, Système LLM \\
+\hline
+\textbf{Objectif} & Capter les besoins fonctionnels, techniques et de sécurité de la plateforme cible et enrichir le graphe de connaissances. \\
+\hline
+\textbf{Pré-condition(s)} & Le projet est initialisé et son graphe ontologique de 39 concepts est instancié. \\
+\hline
+\textbf{Post-condition(s)} & Les concepts sont renseignés, les indices de complétude progressent et les exigences correspondantes sont dérivées. \\
+\hline
+\textbf{Scénario nominal} & 
+1. L'analyste accède au module d'interview du projet.\newline
+2. Le système présente la question courante et son contexte ontologique.\newline
+3. L'analyste renseigne la réponse (choix guidé ou texte libre).\newline
+4. Le moteur interprète la réponse et met à jour le noeud conceptuel associé.\newline
+5. Le système dérive automatiquement les exigences fonctionnelles et de sécurité.\newline
+6. Le système enregistre le tour d'interview et calcule la question suivante.\newline
+7. L'interface rafraîchit dynamiquement la jauge d'avancement et affiche la nouvelle question. \\
+\hline
+\textbf{Scénarios alternatifs} & 
+4a. En cas d'indisponibilité du service cloud d'IA, le système bascule automatiquement sur le moteur déterministe local sans interruption de service.\newline
+6a. Lorsque l'ensemble des concepts clés atteint le seuil de suffisance, l'interview est marquée comme complétée. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Description du cas d'utilisation « Analyser la cybersécurité et exécuter l'audit qualité »}
+\label{tab:uc_security_audit}
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\rowcolor{focpgreen!18}
+\textbf{Cas d'utilisation} & Analyser la cybersécurité et exécuter l'audit qualité \\
+\hline
+\textbf{Acteur(s)} & Ingénieur Exigences / Analyste \\
+\hline
+\textbf{Objectif} & Modéliser les menaces STRIDE/DREAD, générer la matrice RBAC et évaluer les 100 règles de conformité. \\
+\hline
+\textbf{Pré-condition(s)} & Des données ont été capturées dans le graphe de connaissances. \\
+\hline
+\textbf{Post-condition(s)} & Le registre des risques et les scores d'homologation sont calculés et enregistrés. \\
+\hline
+\textbf{Scénario nominal} & 
+1. L'analyste accède à l'espace de cybersécurité et d'audit du projet.\newline
+2. Le moteur de sécurité analyse les flux et données sensibles et génère le modèle STRIDE et la matrice RBAC.\newline
+3. Le moteur d'audit exécute le banc de plus de 100 règles de validation.\newline
+4. L'interface affiche les sous-scores (complétude, confiance, sécurité, architecture, métier, tests) et le score global.\newline
+5. Si le score global est suffisant, le projet est homologué pour l'exportation finale. \\
+\hline
+\textbf{Scénarios alternatifs} & 
+4a. Si des failles ou des omissions sont détectées, le système détaille les règles échouées pour orienter les corrections de l'analyste. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\needspace{16\baselineskip}
+\subsection{Diagramme global des cas d'utilisation}
+
+La figure \ref{fig:use_case_global} illustre le diagramme global des cas d'utilisation de notre application logicielle, structuré en quatre packages fonctionnels majeurs assurant une séparation claire des responsabilités.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[scale=0.76, transform shape,
+    actor/.style={draw=focpgreendark, fill=focpgreenlight, line width=1.1pt, font=\small\sffamily\bfseries, align=center},
+    ai_box/.style={draw=srsaccent, fill=white, rounded corners=6pt, line width=1.1pt, font=\small\sffamily\bfseries, align=center},
+    pkg/.style={draw=emsiblue!80, fill=blue!2, rounded corners=6pt, line width=0.8pt, inner sep=6pt},
+    uc/.style={draw=emsiblue, fill=white, rounded corners=12pt, line width=0.9pt, font=\footnotesize\sffamily, align=center, inner sep=4pt, text width=4.8cm},
+    link/.style={draw=gray!80!black, line width=0.9pt},
+    rel/.style={draw=emsiblue, dashed, -latex, line width=0.8pt, font=\scriptsize\itshape},
+    ai_rel/.style={draw=srsaccent, dashed, -latex, line width=0.9pt, font=\scriptsize\bfseries\color{srsaccent}}
+]
+    % System boundary
+    \draw[rounded corners=10pt, fill=focpgreenlight!30, draw=focpgreen, line width=1.3pt] (2.8,-5.8) rectangle (13.8,5.6);
+    \node[anchor=north west, font=\bfseries\sffamily\color{focpgreendark}] at (3.0,5.3) {Secure Requirements Studio (SRS)};
+
+    % Actors Left
+    % Analyst
+    \node[draw=focpgreendark, circle, minimum size=0.65cm, fill=focpgreenlight] (analyst_head) at (0.6,2.2) {};
+    \node[below=0.05cm of analyst_head, font=\small\bfseries\sffamily\color{focpgreendark}, align=center] (analyst) {Ingénieur Exigences\\/ Analyste};
+    
+    % Manager
+    \node[draw=focpgreendark, circle, minimum size=0.65cm, fill=focpgreenlight] (manager_head) at (0.6,-3.2) {};
+    \node[below=0.05cm of manager_head, font=\small\bfseries\sffamily\color{focpgreendark}, align=center] (manager) {Responsable Projet\\Fondation OCP};
+
+    % Actor Right (AI)
+    \node[ai_box, minimum width=2.4cm, minimum height=1.1cm] (ai) at (16.2,1.3) {Système IA\\(Google Gemini)};
+
+    % Package 1: Cadrage & Paramétrage
+    \draw[pkg] (3.2,2.8) rectangle (8.2,4.8);
+    \node[anchor=north west, font=\tiny\bfseries\sffamily\color{emsiblue}] at (3.3,4.7) {1. Cadrage \& Configuration};
+    \node[uc] (uc1) at (5.7,4.0) {Créer \& paramétrer un projet};
+    \node[uc] (uc2) at (5.7,3.2) {Sélectionner le mode d'élicitation};
+
+    % Package 2: Élicitation
+    \draw[pkg] (8.5,1.8) rectangle (13.5,4.8);
+    \node[anchor=north west, font=\tiny\bfseries\sffamily\color{emsiblue}] at (8.6,4.7) {2. Élicitation des Besoins};
+    \node[uc] (uc3) at (11.0,4.0) {Conduire le questionnaire guidé};
+    \node[uc] (uc4) at (11.0,2.6) {Conduire l'entretien adaptatif IA};
+
+    % Package 3: Analyse & Sécurité
+    \draw[pkg] (3.2,-1.8) rectangle (8.2,2.3);
+    \node[anchor=north west, font=\tiny\bfseries\sffamily\color{emsiblue}] at (3.3,2.2) {3. Analyse, Traçabilité \& Sécurité};
+    \node[uc] (uc5) at (5.7,1.5) {Explorer le Graphe (KG 39 concepts)};
+    \node[uc] (uc6) at (5.7,0.4) {Consulter \& affiner les exigences};
+    \node[uc] (uc7) at (5.7,-1.0) {Analyser la sécurité (STRIDE/RBAC)};
+
+    % Package 4: Homologation & Restitution
+    \draw[pkg] (8.5,-5.2) rectangle (13.5,-0.6);
+    \node[anchor=north west, font=\tiny\bfseries\sffamily\color{emsiblue}] at (8.6,-0.7) {4. Homologation \& Restitution};
+    \node[uc] (uc8) at (11.0,-1.8) {Exécuter l'audit qualité (+100 règles)};
+    \node[uc] (uc9) at (11.0,-3.4) {Générer le Cahier des Charges};
+    \node[uc] (uc10) at (11.0,-4.5) {Exporter (PDF, DOCX, MD, LaTeX)};
+
+    % Links Analyst
+    \draw[link] (analyst_head.east) -- (uc1.west);
+    \draw[link] (analyst_head.east) -- (uc2.west);
+    \draw[link] (analyst_head.east) -- (uc5.west);
+    \draw[link] (analyst_head.east) -- (uc6.west);
+    \draw[link] (analyst_head.east) -- (uc7.west);
+
+    % Links Manager
+    \draw[link] (manager_head.east) -- (uc5.west);
+    \draw[link] (manager_head.east) -- (uc8.west);
+    \draw[link] (manager_head.east) -- (uc10.west);
+
+    % Relations Inter-UC
+    \draw[rel] (uc3.south) -- node[right, font=\tiny] {$\ll$alimente$\gg$} (uc5.north);
+    \draw[rel] (uc4.west) -- node[above, sloped, font=\tiny] {$\ll$alimente$\gg$} (uc5.east);
+    \draw[rel] (uc5.south) -- node[right, font=\tiny] {$\ll$dérive$\gg$} (uc6.north);
+    \draw[rel] (uc7.east) -- node[above, sloped, font=\tiny] {$\ll$intègre$\gg$} (uc8.west);
+    \draw[rel] (uc9.north) -- node[right, font=\tiny] {$\ll$inclut$\gg$} (uc8.south);
+    \draw[rel] (uc9.south) -- node[right, font=\tiny] {$\ll$déclenche$\gg$} (uc10.north);
+
+    % AI interaction
+    \draw[ai_rel] (uc4.east) -- node[above, font=\scriptsize] {$\ll$interagit$\gg$} (ai.west);
+
+\end{tikzpicture}
+\caption{Diagramme global des cas d'utilisation de l'application logicielle développée (SRS)}
+\label{fig:use_case_global}
+\end{figure}
+
+\needspace{8\baselineskip}
+\section{Conclusion}
+
+Ce chapitre a formalisé les besoins fonctionnels et non fonctionnels de la plateforme cible et de notre application logicielle SRS, en accordant une attention approfondie à l'intégration des exigences de cybersécurité (STRIDE, DREAD, RBAC, PIA). L'identification des acteurs réels et la modélisation des cas d'utilisation garantissent une clarté totale sur le périmètre fonctionnel. Le chapitre suivant présente la conception technique du système à travers ses modélisations dynamique et statique détaillées.
+
+\newpage

@@ -23,7 +23,16 @@ async function request<T>(
   const headers = new Headers(options.headers);
   headers.set("Content-Type", "application/json");
 
-  const res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE_URL}${path}`, { ...options, headers });
+  } catch {
+    throw new ApiError(
+      0,
+      "network_error",
+      "Backend indisponible. Vérifiez que l'API FastAPI tourne sur http://localhost:8000."
+    );
+  }
 
   if (!res.ok) {
     let errorCode = "unknown_error";
@@ -320,7 +329,12 @@ export const documentsApi = {
     return `${API_BASE_URL}/projects/${projectId}/documents/export?format=${format}`;
   },
   async download(projectId: string, format: ExportFormat): Promise<void> {
-    const res = await fetch(documentsApi.exportUrl(projectId, format));
+    let res: Response;
+    try {
+      res = await fetch(documentsApi.exportUrl(projectId, format));
+    } catch {
+      throw new ApiError(0, "network_error", "Backend indisponible. Impossible de télécharger le document.");
+    }
     if (!res.ok) throw new ApiError(res.status, "export_failed", "L'export a échoué.");
     const blob = await res.blob();
     const disposition = res.headers.get("Content-Disposition") ?? "";

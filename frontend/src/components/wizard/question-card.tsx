@@ -26,6 +26,14 @@ function QuestionCard({
 }) {
   const checkboxValues = Array.isArray(value) ? value : [];
   const stringValue = typeof value === "string" ? value : "";
+  const customValue = React.useMemo(() => {
+    const source = Array.isArray(value) ? value.find((item) => item.startsWith("custom:")) ?? "" : stringValue.startsWith("custom:") ? stringValue : "";
+    return source.replace(/^custom:/, "");
+  }, [stringValue, value]);
+  const commentValue = React.useMemo(() => {
+    const source = Array.isArray(value) ? value.find((item) => item.startsWith("comment:")) ?? "" : "";
+    return source.replace(/^comment:/, "");
+  }, [value]);
 
   function toggleMulti(optionId: string) {
     if (checkboxValues.includes(optionId)) {
@@ -33,6 +41,15 @@ function QuestionCard({
     } else {
       onChange([...checkboxValues, optionId]);
     }
+  }
+
+  function updateMeta(prefix: "custom:" | "comment:", next: string) {
+    if (Array.isArray(value)) {
+      const withoutPrevious = value.filter((item) => !item.startsWith(prefix));
+      onChange(next.trim() ? [...withoutPrevious, `${prefix}${next}`] : withoutPrevious);
+      return;
+    }
+    onChange(next.trim() ? `${prefix}${next}` : null);
   }
 
   return (
@@ -200,17 +217,22 @@ function QuestionCard({
         {question.options && question.type !== "text" && question.type !== "textarea" && (
           <div className="mt-5 grid gap-3 border-t border-border pt-4">
             <label className="grid gap-1.5 text-sm font-medium">
-              Reponse personnalisee
+              Réponse personnalisée
               <Textarea
-                value={stringValue.startsWith("custom:") ? stringValue.replace(/^custom:/, "") : ""}
-                onChange={(event) => onChange(event.target.value ? `custom:${event.target.value}` : null)}
-                placeholder={question.customPrompt ?? "Ecrivez votre propre reponse si les choix ne couvrent pas le besoin."}
+                value={customValue}
+                onChange={(event) => updateMeta("custom:", event.target.value)}
+                placeholder={question.customPrompt ?? "Écrivez votre propre réponse si les choix ne couvrent pas le besoin."}
                 rows={3}
               />
             </label>
             <label className="grid gap-1.5 text-sm font-medium">
               Commentaires optionnels
-              <Textarea placeholder="Precisions, contraintes, exceptions, regles internes..." rows={2} />
+              <Textarea
+                value={commentValue}
+                onChange={(event) => updateMeta("comment:", event.target.value)}
+                placeholder="Précisions, contraintes, exceptions, règles internes..."
+                rows={2}
+              />
             </label>
           </div>
         )}

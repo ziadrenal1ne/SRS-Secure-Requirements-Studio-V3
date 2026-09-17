@@ -1,0 +1,297 @@
+\documentclass[12pt,a4paper,oneside]{report}
+
+% --- Packages fondamentaux ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[french]{babel}
+\usepackage{mathptmx} % Police Times New Roman standard
+\usepackage[margin=2.5cm,headheight=28pt]{geometry}
+\usepackage{setspace}
+\onehalfspacing
+\usepackage{needspace}
+
+% --- Mise en page des paragraphes ---
+\setlength{\parindent}{0.8cm}
+\setlength{\parskip}{6pt}
+
+% --- Graphiques, tableaux et couleurs ---
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes,arrows,positioning,calc,fit,shadows,shapes.geometric,decorations.pathreplacing}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{titlesec}
+\usepackage{tocloft}
+\usepackage{enumitem}
+
+% ====================================================================
+% CHARTE GRAPHIQUE — Fondation OCP (vert institutionnel) / EMSI (bleu)
+% ====================================================================
+\definecolor{focpgreen}{HTML}{1E7A3D}      % Vert Fondation OCP
+\definecolor{focpgreendark}{HTML}{125226}  % Vert foncé (titres, filets)
+\definecolor{emsiblue}{HTML}{1B3A66}       % Bleu institutionnel EMSI
+\definecolor{srsaccent}{HTML}{0F6E8C}      % Bleu-sarcelle accent SRS
+\definecolor{focpgreenlight}{HTML}{EAF4EC} % Fond très clair (encarts)
+\definecolor{lightgrayrule}{HTML}{B0B0B0}
+
+% --- Style des chapitres et sections (titlesec) ---
+\titleformat{\chapter}[display]
+  {\normalfont\bfseries}
+  {\filright\Large\scshape\color{focpgreen!55!black} \chaptertitlename~\thechapter}
+  {6pt}
+  {\titlerule[1.4pt]\vspace{8pt}\Huge\color{focpgreendark}}
+  [\vspace{4pt}{\color{focpgreen}\titlerule[0.8pt]}]
+\titlespacing*{\chapter}{0pt}{0pt}{28pt}
+
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{focpgreendark}}
+  {\thesection}{0.6em}{}
+  [{\color{focpgreen!60}\titlerule[0.5pt]}]
+\titleformat{\subsection}
+  {\normalfont\large\bfseries\color{emsiblue}}
+  {\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries\itshape\color{srsaccent}}
+  {\thesubsubsection}{0.6em}{}
+
+% Configuration des légendes selon les normes académiques
+\captionsetup{
+    font={small,rm},
+    labelfont={bf,color=focpgreendark},
+    justification=centering,
+    skip=6pt
+}
+
+% --- En-têtes et pieds de page ---
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\fancyhead[L]{\small\scshape\color{focpgreendark}\leftmark}
+\fancyhead[R]{\small\itshape\color{lightgrayrule} Rapport PFA -- EMSI}
+\renewcommand{\headrulewidth}{0.6pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{focpgreen}\leaders\hrule height \headrulewidth\hfill}}
+\fancyfoot[L]{\footnotesize\itshape\color{gray!60!black} Secure Requirements Studio -- Cahier des Charges FOCP}
+\fancyfoot[R]{\footnotesize\bfseries\color{focpgreendark}\thepage}
+\renewcommand{\footrulewidth}{0.4pt}
+
+% Pour les pages de début de chapitre
+\fancypagestyle{plain}{
+    \fancyhf{}
+    \fancyfoot[L]{\footnotesize\itshape\color{gray!60!black} Secure Requirements Studio -- Cahier des Charges FOCP}
+    \fancyfoot[R]{\footnotesize\bfseries\color{focpgreendark}\thepage}
+    \renewcommand{\headrulewidth}{0pt}
+    \renewcommand{\footrulewidth}{0.4pt}
+}
+
+% --- Liens et références croisées ---
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=focpgreendark,
+    citecolor=emsiblue,
+    urlcolor=srsaccent,
+    pdfborder={0 0 0},
+    pdftitle={Conception d'une plateforme de gestion des bénéficiaires -- Fondation OCP},
+    pdfauthor={Mohamed Ziad Cherkaoui},
+    pdfsubject={Secure Requirements Studio (SRS) \& MVP Bénéficiaires}
+}
+
+% --- Table des matières colorée ---
+\renewcommand{\cftchapfont}{\bfseries\color{focpgreendark}}
+\renewcommand{\cftsecfont}{\color{emsiblue}}
+\renewcommand{\cftchappagefont}{\bfseries\color{focpgreendark}}
+
+% --- Boîte d'information standardisée (encadré vert clair) ---
+\newcommand{\infobox}[2]{%
+\begin{center}
+\fcolorbox{focpgreen}{focpgreenlight}{%
+\begin{minipage}{0.94\textwidth}
+\vspace{2pt}
+\textbf{\color{focpgreendark}#1}\\[3pt]
+#2
+\vspace{2pt}
+\end{minipage}}
+\end{center}}
+
+% --- Listings de code ---
+\usepackage{listings}
+\lstset{
+    basicstyle=\ttfamily\footnotesize,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{gray!5},
+    keywordstyle=\color{blue!80!black}\bfseries,
+    commentstyle=\color{green!50!black}\itshape,
+    stringstyle=\color{red!70!black},
+    numbers=left,
+    numberstyle=\tiny\color{gray},
+    numbersep=8pt,
+    tabsize=2,
+    showstringspaces=false,
+    captionpos=t
+}
+
+% --- Bibliographie ---
+\usepackage[numbers,sort&compress]{natbib}
+\bibliographystyle{plain}
+
+% --- Réglage de la profondeur de la Table des Matières (3 niveaux max) ---
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{3}
+
+\begin{document}
+
+% --- Ré-harmonisation des titres auto-générés (TdM, Liste des figures/tableaux) ---
+\makeatletter
+\renewcommand\tableofcontents{%
+  \chapter*{\contentsname}%
+  \@mkboth{\MakeUppercase\contentsname}{\MakeUppercase\contentsname}%
+  \@starttoc{toc}%
+}
+\renewcommand\listoffigures{%
+  \chapter*{\listfigurename}%
+  \@mkboth{\MakeUppercase\listfigurename}{\MakeUppercase\listfigurename}%
+  \@starttoc{lof}%
+}
+\renewcommand\listoftables{%
+  \chapter*{\listtablename}%
+  \@mkboth{\MakeUppercase\listtablename}{\MakeUppercase\listtablename}%
+  \@starttoc{lot}%
+}
+\makeatother
+
+% ====================================================================
+% PAGE DE GARDE OFFICIELLE EMSI / FONDATION OCP
+% ====================================================================
+\begin{titlepage}
+\thispagestyle{empty}
+
+% --- Bandeau supérieur : logos institutionnels ---
+\noindent
+\begin{minipage}[c]{0.48\textwidth}
+    \raggedright
+    \includegraphics[height=1.6cm]{figures/logos/logo_emsi.png}
+\end{minipage}%
+\begin{minipage}[c]{0.48\textwidth}
+    \raggedleft
+    \includegraphics[height=1.55cm]{figures/logos/logo_focp.png}
+\end{minipage}
+
+\vspace{2pt}
+{\color{focpgreen}\hrule height 1.6pt}
+\vspace{0.2pt}
+{\color{focpgreendark}\hrule height 0.5pt}
+
+\vspace{0.6cm}
+\begin{center}
+
+    {\small\scshape\color{gray!50!black} Membre de Honoris United Universities}\\[4pt]
+    {\Large\bfseries\scshape\color{emsiblue} École Marocaine des Sciences de l'Ingénieur}\\[3pt]
+    {\normalsize Filière : Ingénierie Informatique et Réseaux (IIR)}\\[14pt]
+
+    \fcolorbox{focpgreen}{white}{%
+      \begin{minipage}{0.58\textwidth}
+        \centering\vspace{3pt}
+        {\bfseries\large\color{focpgreendark} PROJET DE FIN D'ANNÉE}\\[1pt]
+        {\small\itshape Année Universitaire 2025 / 2026}
+        \vspace{3pt}
+      \end{minipage}}
+
+    \vspace{0.6cm}
+
+    {\LARGE\bfseries\color{focpgreendark} Conception d'une plateforme de gestion des bénéficiaires de l'Axe Social et Solidaire au sein de la Fondation OCP en intégrant des exigences de cybersécurité}
+
+    \vspace{0.4cm}
+    {\color{focpgreen}\rule{0.5\textwidth}{0.6pt}}
+    \vspace{0.25cm}
+
+    {\large\itshape\color{emsiblue} Élaboration du Cahier des Charges de la future plateforme -- conception et développement de \textbf{Secure Requirements Studio (SRS)} et réalisation du prototype fonctionnel (MVP)}
+
+    \vspace{0.6cm}
+
+    \begin{tikzpicture}
+        \node[draw=focpgreen, line width=1pt, rounded corners=6pt, fill=focpgreenlight,
+              inner sep=7pt, text width=0.86\textwidth, align=center] {
+            \footnotesize\sffamily
+            \textbf{Système cible} : Plateforme de gestion des bénéficiaires (Fondation OCP) $\;\rightarrow\;$
+            \textbf{Outil PFA} : Secure Requirements Studio (SRS) $\;\rightarrow\;$\\
+            \textbf{Livrable} : Cahier des Charges formel $\;\rightarrow\;$
+            \textbf{Validation} : Prototype fonctionnel (MVP)
+        };
+    \end{tikzpicture}
+
+    \vspace{0.7cm}
+
+    \noindent
+    \begin{minipage}[t]{0.48\textwidth}
+        \begin{flushleft} \normalsize
+            \textbf{\color{focpgreendark}Réalisé par :}\\[2pt]
+            Mohamed Ziad Cherkaoui\\[1pt]
+            {\footnotesize\itshape Élève Ingénieur en IIR}
+        \end{flushleft}
+    \end{minipage}%
+    \begin{minipage}[t]{0.48\textwidth}
+        \begin{flushright} \normalsize
+            \textbf{\color{focpgreendark}Organisme d'accueil :}\\
+            Fondation OCP\\[4pt]
+            \textbf{\color{focpgreendark}Tuteur Pédagogique :}\\
+            Saber Sarra
+        \end{flushright}
+    \end{minipage}
+
+    \vfill
+    {\color{focpgreen}\rule{\textwidth}{0.8pt}}\\[4pt]
+    {\large\bfseries\color{emsiblue} Année Universitaire : 2025 / 2026}
+\end{center}
+\end{titlepage}
+
+% ====================================================================
+% PAGES PRÉLIMINAIRES
+% ====================================================================
+\pagenumbering{roman}
+
+\input{chapters/dedications}
+\input{chapters/remerciements}
+\input{chapters/resume}
+
+% Tables automatiques
+\tableofcontents
+\newpage
+
+\listoffigures
+\newpage
+
+\listoftables
+\newpage
+
+\input{chapters/abbreviations}
+
+% ====================================================================
+% CORPS DU RAPPORT
+% ====================================================================
+\input{chapters/introduction}
+\input{chapters/chapitre1}
+\input{chapters/chapitre2}
+\input{chapters/chapitre3}
+\input{chapters/chapitre4}
+\input{chapters/chapitre5}
+\input{chapters/conclusion}
+
+% ====================================================================
+% BIBLIOGRAPHIE ET ANNEXES
+% ====================================================================
+\nocite{*}
+\bibliography{references}
+\addcontentsline{toc}{chapter}{Bibliographie et Nétographie}
+\newpage
+
+\input{chapters/annexes}
+
+\end{document}

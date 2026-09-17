@@ -6,7 +6,6 @@ import { ArrowLeft, CheckCircle2, Eye, EyeOff, Loader2, PlugZap, Save, XCircle }
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
-import { Switch } from "@/components/ui/switch";
 import {
   AIProviderSettings,
   defaultAIProviderSettings,
@@ -60,18 +59,18 @@ export default function SettingsPage() {
         </Link>
         <div>
           <p className="text-sm font-semibold">AI Providers</p>
-          <p className="text-xs text-muted-foreground">Choose Classic or Google Gemini for new AI requests.</p>
+          <p className="text-xs text-muted-foreground">Choisir le fournisseur IA et vérifier la connexion.</p>
         </div>
       </header>
 
       <section className="mx-auto grid max-w-3xl gap-5 px-4 py-10">
         <label className="grid gap-1.5 text-sm font-medium">
-          Provider
+          Fournisseur
           <Select
             value={settings.provider}
             onChange={(value) => update("provider", value as AIProviderSettings["provider"])}
             options={[
-              { value: "template", label: "Classic (No AI)" },
+              { value: "template", label: "Questionnaire guidé" },
               { value: "gemini", label: "Google Gemini" },
             ]}
           />
@@ -81,12 +80,12 @@ export default function SettingsPage() {
         {isGemini && (
           <>
             <label className="grid gap-1.5 text-sm font-medium">
-              API Key
+              Clé API
               <div className="flex gap-2">
                 <Input
                   type={showKey ? "text" : "password"}
                   value={settings.gemini_api_key ?? ""}
-                  placeholder={settings.gemini_api_key_configured ? "Configured on server" : "Paste your Gemini API key"}
+                  placeholder={settings.gemini_api_key_configured ? "Clé configurée" : "Coller la clé API Gemini"}
                   onChange={(event) => update("gemini_api_key", event.target.value)}
                 />
                 <Button type="button" variant="outline" size="icon" onClick={() => setShowKey((value) => !value)} aria-label="Show or hide API key">
@@ -95,47 +94,25 @@ export default function SettingsPage() {
               </div>
             </label>
             <label className="grid gap-1.5 text-sm font-medium">
-              Model
+              Modèle
               <Input value={settings.gemini_model} onChange={(event) => update("gemini_model", event.target.value)} />
             </label>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-4">
-              <label className="grid gap-1.5 text-sm font-medium">
-                Temperature
-                <Input type="number" step="0.1" value={settings.gemini_temperature} onChange={(event) => update("gemini_temperature", Number(event.target.value))} />
-              </label>
-              <label className="grid gap-1.5 text-sm font-medium">
-                Top P
-                <Input type="number" step="0.01" value={settings.gemini_top_p} onChange={(event) => update("gemini_top_p", Number(event.target.value))} />
-              </label>
-              <label className="grid gap-1.5 text-sm font-medium">
-                Max tokens
-                <Input type="number" value={settings.gemini_max_output_tokens} onChange={(event) => update("gemini_max_output_tokens", Number(event.target.value))} />
-              </label>
-              <label className="grid gap-1.5 text-sm font-medium">
-                Timeout
-                <Input type="number" value={settings.gemini_timeout_seconds} onChange={(event) => update("gemini_timeout_seconds", Number(event.target.value))} />
-              </label>
-            </div>
-            <div className="flex items-center justify-between rounded-xl border border-border bg-surface p-4 text-sm font-medium">
-              Enable Streaming
-              <Switch checked={settings.gemini_enable_streaming} onCheckedChange={(checked) => update("gemini_enable_streaming", checked)} aria-label="Enable Gemini streaming" />
-            </div>
           </>
         )}
 
         <div className="flex flex-wrap items-center gap-3 rounded-xl border border-border bg-surface p-4">
           <div className="flex items-center gap-2 text-sm">
             {status.startsWith("Connection failed") ? <XCircle className="h-4 w-4 text-destructive" /> : <CheckCircle2 className="h-4 w-4 text-accent" />}
-            Status: <span className="font-semibold">{status}</span>
+            Statut : <span className="font-semibold">{status}</span>
           </div>
           <div className="ml-auto flex gap-2">
             <Button type="button" variant="outline" onClick={testConnection} disabled={testing} className="gap-2">
               {testing ? <Loader2 className="h-4 w-4 animate-spin" /> : <PlugZap className="h-4 w-4" />}
-              Test Connection
+              Vérifier la connexion
             </Button>
             <Button type="button" onClick={saveSettings} disabled={saving} className="gap-2">
               {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-              Save
+              Enregistrer
             </Button>
           </div>
         </div>

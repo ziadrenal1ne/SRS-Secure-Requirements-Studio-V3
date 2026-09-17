@@ -1,0 +1,58 @@
+@startuml
+skinparam nodeStyle rectangle
+skinparam shadowing false
+skinparam defaultFontName "Helvetica,Arial,sans-serif"
+skinparam defaultFontSize 11
+
+skinparam node {
+    BackgroundColor #F8FAFC
+    BorderColor #1B3A66
+    BorderThickness 1.2
+}
+
+skinparam component {
+    BackgroundColor #FFFFFF
+    BorderColor #1B3A66
+}
+
+skinparam database {
+    BackgroundColor #EAF4EC
+    BorderColor #1E7A3D
+}
+
+skinparam cloud {
+    BackgroundColor #F5F3FF
+    BorderColor #6D28D9
+}
+
+node "Poste Client (Navigateur Web)" as ClientNode {
+    artifact "Single Page Application\n(Next.js 15 / React 19)" as SPA
+}
+
+node "Serveur d'Application (Hôte Docker Compose)" as HostNode {
+    
+    node "Conteneur Docker : frontend" as FrontNode {
+        component "Node.js 24 Alpine\n(Port 3000)" as FrontApp
+    }
+    
+    node "Conteneur Docker : backend" as BackNode {
+        component "FastAPI / Uvicorn (Py 3.12)\n(Port 8000)" as BackApp
+    }
+    
+    node "Conteneur Docker : db" as DBNode {
+        database "PostgreSQL 16 Alpine\n(Port 5432 - Volume persistant)" as DBApp
+    }
+}
+
+cloud "Google Cloud Platform" as CloudNode {
+    [Google AI Studio / Gemini API] as CloudAI
+}
+
+' Relations de communication
+SPA --> FrontApp : HTTP / HTTPS (Port 3000)
+SPA --> BackApp : API REST / JSON (Port 8000)
+FrontApp --> BackApp : Proxy API interne
+BackApp --> DBApp : TCP 5432 (asyncpg)
+BackApp ..> CloudAI : HTTPS TLS 1.3 (API Key REST)
+
+@enduml

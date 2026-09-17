@@ -60,39 +60,68 @@ export function saveLocalAIProviderSettings(settings: AIProviderSettings) {
 }
 
 export async function fetchAIProviderSettings(): Promise<AIProviderSettings> {
-  const response = await fetch(`${API_BASE_URL}/ai/settings`);
-  if (!response.ok) return loadLocalAIProviderSettings();
-  return withDefaults(await response.json());
+  try {
+    const response = await fetch(`${API_BASE_URL}/ai/settings`);
+    if (!response.ok) return loadLocalAIProviderSettings();
+    return withDefaults(await response.json());
+  } catch {
+    return loadLocalAIProviderSettings();
+  }
 }
 
 export async function saveAIProviderSettings(settings: AIProviderSettings): Promise<AIProviderSettings> {
   saveLocalAIProviderSettings(settings);
-  const response = await fetch(`${API_BASE_URL}/ai/settings`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(settings),
-  });
-  if (!response.ok) throw new Error("Unable to save AI provider settings.");
-  const saved = withDefaults(await response.json());
-  saveLocalAIProviderSettings(saved);
-  return saved;
+  try {
+    const response = await fetch(`${API_BASE_URL}/ai/settings`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(settings),
+    });
+    if (!response.ok) return settings;
+    const saved = withDefaults(await response.json());
+    saveLocalAIProviderSettings(saved);
+    return saved;
+  } catch {
+    return settings;
+  }
 }
 
 export async function testAIProviderConnection(settings: AIProviderSettings): Promise<AIConnectionStatus> {
-  const response = await fetch(`${API_BASE_URL}/ai/test`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(settings),
-  });
-  if (!response.ok) {
+  if (settings.provider === "template") {
+    return {
+      status: "fallback",
+      connected: true,
+      model_available: true,
+      provider: "template",
+      model: "questionnaire-guide",
+      error: null,
+    };
+  }
+  try {
+    const response = await fetch(`${API_BASE_URL}/ai/test`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(settings),
+    });
+    if (!response.ok) {
+      return {
+        status: "error",
+        connected: false,
+        model_available: false,
+        provider: settings.provider,
+        model: settings.gemini_model,
+        error: `Connection test failed (${response.status}).`,
+      };
+    }
+    return response.json();
+  } catch {
     return {
       status: "error",
       connected: false,
       model_available: false,
       provider: settings.provider,
-      model: settings.provider === "gemini" ? settings.gemini_model : "template-heuristic",
-      error: `Connection test failed (${response.status}).`,
+      model: settings.gemini_model,
+      error: "Backend indisponible ou connexion réseau impossible.",
     };
   }
-  return response.json();
 }

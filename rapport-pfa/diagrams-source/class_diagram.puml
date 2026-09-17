@@ -1,0 +1,133 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam shadowing false
+
+class Project {
+    +UUID id
+    +String name
+    +String short_name
+    +String department
+    +String description
+    +String status
+    +Integer progress
+    +Integer security_score
+    +UUID organization_id
+    +UUID owner_id
+    +DateTime created_at
+    +DateTime updated_at
+}
+
+class KnowledgeGraphNode {
+    +UUID id
+    +UUID project_id
+    +String concept_key
+    +String domain
+    +String label
+    +String description
+    +Integer completion
+    +Integer confidence
+    +String importance
+    +Integer business_value
+    +String risk
+    +String status
+    +JSON validation_rules
+    +JSON missing_information
+    +JSON captured_data
+    +JSON generated_questions
+}
+
+class KnowledgeGraphEdge {
+    +UUID id
+    +UUID node_id
+    +UUID dependency_node_id
+}
+
+class InterviewSession {
+    +UUID id
+    +UUID project_id
+    +String status
+    +String pending_concept_key
+    +String pending_question
+}
+
+class InterviewTurn {
+    +UUID id
+    +UUID session_id
+    +Integer sequence
+    +String concept_key
+    +String question
+    +String answer
+    +Integer completion_delta
+    +Integer confidence_delta
+    +String consultant_note
+    +JSON extracted_data
+}
+
+class Requirement {
+    +UUID id
+    +UUID project_id
+    +String requirement_key
+    +String requirement_type
+    +String title
+    +String description
+    +String priority
+    +String business_goal
+    +String risk
+    +String status
+    +String owner
+    +JSON actors
+    +JSON acceptance_criteria
+    +JSON dependencies
+    +JSON security_controls
+    +JSON database_tables
+    +JSON api_endpoints
+    +JSON ui_screens
+    +JSON test_cases
+    +String source_concept_key
+}
+
+class SecurityAnalysis {
+    +UUID id
+    +UUID project_id
+    +JSON threat_model
+    +JSON rbac_matrix
+    +JSON risk_register
+    +JSON security_checklist
+    +JSON privacy_impact_assessment
+    +JSON data_classification
+    +Integer security_score
+}
+
+class ReviewRun {
+    +UUID id
+    +UUID project_id
+    +JSON findings
+    +Integer rule_count
+    +Integer failed_count
+    +Integer completeness_score
+    +Integer confidence_score
+    +Integer security_score
+    +Integer architecture_score
+    +Integer business_score
+    +Integer testing_score
+    +Integer overall_score
+    +Boolean approved_for_export
+}
+
+class GeneratedDocument {
+    +UUID id
+    +UUID project_id
+    +JSON content
+}
+
+Project "1" *-- "0..*" KnowledgeGraphNode : contient
+Project "1" *-- "0..*" Requirement : génère
+Project "1" *-- "0..1" InterviewSession : possède
+Project "1" *-- "0..1" SecurityAnalysis : analyse
+Project "1" *-- "0..1" ReviewRun : évalue
+Project "1" *-- "0..1" GeneratedDocument : produit
+
+KnowledgeGraphNode "1" *-- "0..*" KnowledgeGraphEdge : dépend de
+InterviewSession "1" *-- "0..*" InterviewTurn : enregistre
+KnowledgeGraphNode "1" ..> "0..*" Requirement : source_concept_key
+@enduml

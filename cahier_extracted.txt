@@ -1,0 +1,158 @@
+=== PAGE 1 ===
+Cahier des Charges
+Plateforme de Gestion des Bénéficiaires Axe Économie Sociale et Solidaire
+1. Contexte et problématique
+La Fondation OCP anime, à travers sonAxe Économie Sociale et Solidaire, un réseau national d’environ1 700
+coopérativeset de leurs bénéficiaires directs et indirects. Le suivi de ce réseau repose aujourd’hui sur des
+données dispersées entre plusieurs acteurs et formats (fichiers locaux, échanges manuels, documents papier),
+ce qui rend difficile la consolidation des rapports, le suivi fiable des indicateurs dans le temps et le pilotage global
+du réseau.
+Ce document définit le périmètre fonctionnel, les règles métier et les exigences — notamment de cybersécurité —
+d’une plateforme destinée à centraliser ces données, fiabiliser leur mise à jour, et permettre un pilotage par les
+données à l’échelle du réseau complet.
+2. Objectifs de la plateforme
+• Centraliser les données du réseau de coopératives
+• Suivre les coopératives et leurs bénéficiaires
+• Structurer le reporting mensuel
+• Suivre les indicateurs ESG et les ODD
+• Gérer les documents et conventions
+• Digitaliser le circuit de validation
+• Fournir des tableaux de bord décisionnels
+• Cartographier le réseau
+• Permettre la recherche et le filtrage
+• Produire des analyses et des exports
+• Garantir la traçabilité de chaque action
+• Répondre à des exigences de cybersécurité strictes
+3. Utilisateurs et permissions
+Le système repose surdeux rôles distincts. Une coopérative ne peut, en aucun cas, consulter ou modifier les
+données d’une autre coopérative.
+Administrateur Fondation OCP— accès global au réseau
+Consulter, rechercher et filtrer les coopératives · analyser les indicateurs et bénéficiaires · valider ou rejeter une soumis-
+sion avec commentaire · corriger exceptionnellement une donnée · gérer documents et rapports · consulter les historiques
+· exporter les données · consulter les tableaux de bord et gérer les notifications.
+Représentant de coopérative— accès limité à sa coopérative
+Consulter et mettre à jour son profil · saisir ses statistiques et déclarer ses bénéficiaires · renseigner ses activités et ODD
+· déposer rapports et documents · consulter l’état de ses soumissions et corriger une soumission rejetée · consulter ses
+notifications et son tableau de bord.
+4. Données gérées
+Catégorie Contenu principal
+Coopérative Identité, coordonnées, localisation (région / province / ville), secteur, statut, informations administratives,
+conventions
+Bénéficiaires Femmes, hommes, jeunes, personnes en situation de handicap, agriculteurs, autres catégories perti-
+nentes[à valider]; distinction stricte directs / indirects
+Activités Activités réalisées, période, localisation, nombre de participants, indicateurs et ODD associés
+Documents Conventions, rapports, fichiers CSV / Excel / PDF , autres pièces justificatives
+=== PAGE 2 ===
+Fondation OCP— Axe Économie Sociale et Solidaire Cahier des charges V2 — Plateforme FOCP
+5. Workflow mensuel de soumission et validation
+Saisie ou import Soumission Validation
+Fondation OCP
+Approbation
+ou rejet motivé Notification Correction
+si rejet
+,→retour à
+l’étape Soumission
+En cas de rejet, l’administrateur fournit unmotif obligatoire; la coopérative est notifiée, consulte le motif, corrige,
+puis soumet une nouvelle version.Chaque version reste traçable— aucune soumission antérieure n’est
+supprimée ou remplacée silencieusement.
+5.1 Correction administrative exceptionnelle
+Toute correction directe d’une donnée par un administrateur doit être identifiée comme unemodification
+administrativeet enregistrer : l’ancienne valeur, la nouvelle valeur, l’identité de l’administrateur, la date/heure, et
+le motif. La coopérative concernée est notifiée. L ’historique n’est jamais écrasé silencieusement.
+6. Tableaux de bord
+Rôle Contenu du tableau de bord
+Coopérative Statistiques mensuelles, évolution des bénéficiaires, activités, ODD, indicateurs ESG, rapports,
+documents, notifications, état des soumissions
+Administrateur Nombre total de coopératives, coopératives actives/inactives, total bénéficiaires, évolution mensuelle,
+répartition régionale / sectorielle / par ODD, indicateurs ESG, rapports en attente ou rejetés, coopéra-
+tives sans mise à jour, statistiques comparatives
+Seuls les KPI listés ci-dessus sont confirmés à ce stade ; tout indicateur métier supplémentaire devra être validé avec la Fondation.
+7. Cartographie, recherche et import de données
+Cartographie interactive— localisation des coopératives sur une carte du Maroc, avec regroupement par
+région/ville, recherche, filtres, et affichage des informations principales au clic ou au survol. Les informations
+sensibles ne sont jamais exposées sur la carte. Extension de la cartographie à l’échelle mondiale :[à valider].
+Recherche et filtres— recherche combinable par nom, région, province, ville, secteur, statut, ODD, activité,
+type de bénéficiaire et période (ex.coopératives agricoles + région Oriental + ODD Eau + actives).
+Import de données(CSV / Excel) — le système vérifie le fichier et les colonnes attendues, détecte et présente
+les erreurs, permet leur correction, évite les doublons, enregistre l’origine de l’import, et ne met à jour les données
+qu’après validation.
+8. Documents, rapports, ODD et ESG
+Le système gère le téléversement, la consultation, la catégorisation, le versionnement, la validation, l’archivage
+et le téléchargement des documents (conventions, rapports, justificatifs, fichiers statistiques, documents ESG)
+selon les permissions de chaque rôle.
+Une coopérative peut être associée àplusieurs ODD; le système permet d’associer des activités aux ODD, de
+suivre les contributions, de filtrer par ODD, et de consolider les indicateurs ESG en rapports de synthèse.
+9. Notifications
+Évènements couverts : nouvelle soumission, rejet, demande de correction, validation, document manquant,
+convention arrivant à échéance, etabsence de mise à jour mensuelleau-delà d’un délai défini par la Fondation.
+Canal principal : notification in-app. Canaux additionnels (e-mail, SMS) :[à valider].
+10. Exigences de cybersécurité
+La cybersécurité constitue une exigence transversale et prioritaire de la plateforme.
+Direction de la Transformation Digitale 2 / 3 Confidentiel — usage interne
+=== PAGE 3 ===
+Fondation OCP— Axe Économie Sociale et Solidaire Cahier des charges V2 — Plateforme FOCP
+Contrôle d’accès
+• RBAC et séparation stricte des espaces
+• Principe du moindre privilège
+• Protection renforcée des comptes administrateurs
+Authentification
+• Politique de mot de passe robuste
+• Gestion sécurisée des sessions
+• MFA pour comptes à privilèges[à valider]
+• Protection contre les tentatives répétées
+Données
+• TLS/HTTPS systématique
+• Chiffrement au repos des données sensibles[à
+valider]
+• Protection des données personnelles
+• Contrôle des téléchargements
+Fichiers
+• Validation des extensions et du type MIME
+• Limitation de taille des fichiers
+• Contrôle antivirus/malware[à valider]
+• Stockage sécurisé
+Traçabilité
+• Journalisation : connexions, modifications, valida-
+tions, rejets, imports, exports, suppressions, cor-
+rections administratives
+Résilience
+• Sauvegardes régulières
+• Restauration testée périodiquement
+• Continuité de service et protection contre la perte
+de données
+11. Exigences non fonctionnelles et contraintes techniques
+• Sécurité, disponibilité, performance
+• Évolutivité au-delà de 1 700 coopératives
+• Compatibilité mobile / responsive
+• Accessibilité
+• Interface français / arabe[à valider]
+• Maintenabilité et traçabilité
+Architecture cible[recommandé]: application web moderne, sécurisée, modulaire et évolutive (frontend / backend
+applicatif avec authentification et contrôle d’accès / base de données relationnelle / stockage documentaire
+sécurisé). Les choix technologiques précis restent desrecommandations d’implémentation, non des exigences
+fonctionnelles du présent cahier des charges.
+12. Livrables attendus et critères d’acceptation
+Livrables
+• Application web fonctionnelle
+• Code source
+• Documentation technique et utilisateur
+• Configuration de déploiement
+• Tests
+• Documentation cybersécurité
+• Guide d’installation
+• Données de démonstration[recommandé]
+Critères d’acceptation (extraits)
+• Une coopérative n’accède qu’à ses propres don-
+nées
+• L ’administrateur consulte l’ensemble du réseau
+• Un rejet possède toujours un motif
+• Une correction admin. crée une nouvelle version
+tracée
+• Les actions sensibles sont journalisées
+• Un import invalide est refusé avec explication
+• Les exports respectent les droits d’accès
+Points à valider avec la Fondation OCP
+MFA pour comptes à privilèges · chiffrement au repos des données sensibles · contrôle antivirus/malware sur les fichiers
+· canaux de notification additionnels (e-mail, SMS) · extension de la cartographie à l’échelle mondiale · interface bilingue
+français/arabe · catégories de bénéficiaires additionnelles · choix technologiques définitifs de mise en œuvre.
+Direction de la Transformation Digitale 3 / 3 Confidentiel — usage interne

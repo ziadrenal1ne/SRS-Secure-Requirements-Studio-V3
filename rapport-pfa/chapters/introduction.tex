@@ -1,0 +1,37 @@
+\chapter*{Introduction Générale}
+\addcontentsline{toc}{chapter}{Introduction Générale}
+\markboth{INTRODUCTION GÉNÉRALE}{INTRODUCTION GÉNÉRALE}
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+La transformation digitale des organisations à fort impact socio-économique nécessite une phase de cadrage et d'ingénierie des exigences d'une grande rigueur. La définition formelle des besoins conditionne directement l'architecture logicielle, la robustesse opérationnelle, la conformité réglementaire et la sécurité des systèmes d'information futurs. Dans les démarches logicielles traditionnelles, la rédaction manuelle des cahiers des charges s'avère toutefois longue, fragmentée, sujette à des omissions critiques et difficilement traçable face à la complexité croissante des exigences fonctionnelles et des menaces de cybersécurité.
+
+Ce Projet de Fin d'Année (PFA) en Ingénierie Informatique et Réseaux à l'École Marocaine des Sciences de l'Ingénieur (EMSI) s'inscrit au coeur de cette problématique, en réponse à un besoin stratégique émis par la \textbf{Fondation OCP}. À travers son \textbf{Axe Social et Solidaire}, la Fondation OCP anime un réseau national d'envergure regroupant environ 1\,700 coopératives marocaines partenaires et leurs bénéficiaires directs et indirects (femmes artisanes et agricultrices, jeunes entrepreneurs, personnes en situation de handicap, exploitants agricoles). Pour assurer la centralisation des profils, la digitalisation des soumissions mensuelles, la cartographie nationale et le suivi des indicateurs d'impact environnemental, social et de gouvernance (ESG) ainsi que des Objectifs de Développement Durable (ODD), la Fondation OCP a exprimé la nécessité de la \textbf{conception d'une plateforme de gestion des bénéficiaires de l'axe social et solidaire au sein de la Fondation OCP en intégrant des exigences de cybersécurité}.
+
+La réussite d'un tel système multi-acteurs et manipulateur de données sensibles exige au préalable un \textbf{Cahier des Charges fonctionnel, technique et de sécurité précis, structuré et rigoureusement adapté au contexte de la Fondation OCP}.
+
+Dans ce cadre, la problématique centrale de notre travail s'énonce ainsi :
+\begin{quote}
+\textit{« Comment formaliser de manière structurée, précise et sécurisée les besoins liés à la conception d'une plateforme de gestion des bénéficiaires de l'axe social et solidaire au sein de la Fondation OCP, tout en intégrant dès la phase de spécification les exigences de cybersécurité nécessaires, et comment valider concrètement ces spécifications à travers un prototype fonctionnel ? »}
+\end{quote}
+
+Face à cette problématique, nous avons adopté une démarche méthodologique et technologique rigoureuse s'articulant autour de trois piliers complémentaires :
+\begin{enumerate}
+    \item \textbf{Le système cible} : La plateforme de gestion des bénéficiaires de l'Axe Social et Solidaire au sein de la Fondation OCP, dont les besoins métier (annuaire, cartographie, reporting mensuel, conventions, GED, indicateurs ESG/ODD) et les contraintes de sécurité (RBAC, chiffrement, traçabilité) constituent le domaine d'application visé.
+    \item \textbf{L'application logicielle développée (SRS)} : \textbf{Secure Requirements Studio (SRS)}, le système informatique que nous avons conçu et développé pour modéliser le graphe de connaissances du projet (39 concepts ontologiques), conduire des entretiens d'élicitation structurés, automatiser la modélisation des menaces de cybersécurité (STRIDE/DREAD), évaluer la qualité du cadrage via plus de 100 règles d'audit, et générer le livrable officiel de référence : \texttt{Cahier\_des\_Charges\_FOCP\_V3.pdf}.
+    \item \textbf{Le prototype fonctionnel (MVP)} : Le \textbf{Minimum Viable Product} de la plateforme de gestion des bénéficiaires, développé pour fournir une preuve de concept concrète et valider l'opérabilité des exigences formalisées dans le Cahier des Charges.
+\end{enumerate}
+
+Le présent rapport est structuré en cinq chapitres complémentaires conformément aux exigences académiques de l'EMSI :
+
+\begin{itemize}
+    \item \textbf{Le Chapitre 1 (Présentation du cadre de projet)} détaille le contexte institutionnel de la Fondation OCP et de l'Axe Social et Solidaire, expose l'étude de l'existant, met en lumière la critique des approches traditionnelles, explicite la solution logicielle proposée, et présente le modèle de développement agile ainsi que le planning prévisionnel du projet.
+    \item \textbf{Le Chapitre 2 (Spécification des besoins)} formalise les besoins fonctionnels, non fonctionnels et de cybersécurité, identifie les acteurs réels, et modélise les cas d'utilisation accompagnés du diagramme global des cas d'utilisation UML restructuré.
+    \item \textbf{Le Chapitre 3 (Conception du système)} aborde l'ingénierie logicielle à travers une modélisation dynamique détaillée (diagrammes de séquences, collaboration, états-transitions et activités) et une modélisation statique rigoureuse (diagramme de classes, modèle relationnel, dictionnaire de données, diagrammes de composants et de déploiement).
+    \item \textbf{Le Chapitre 4 (Réalisation du système SRS)} présente l'environnement de développement, décrit les modules implémentés, expose les véritables captures d'écran de l'application logicielle SRS, et détaille l'analyse du livrable officiel {\ttfamily Cahier\allowbreak\_\allowbreak des\allowbreak\_\allowbreak Charges\allowbreak\_\allowbreak FOCP\allowbreak\_\allowbreak V3.pdf}.
+    \item \textbf{Le Chapitre 5 (Réalisation et présentation du MVP de la plateforme des bénéficiaires)} expose la concrétisation des spécifications à travers le développement du prototype fonctionnel (MVP). Il en détaille l'architecture modulaire et présente l'ensemble de ses interfaces réelles : authentification RBAC, tableau de bord décisionnel, annuaire des coopératives, cartographie interactive, reporting mensuel, conventions, GED, import/export et analytique ESG/ODD.
+\end{itemize}
+
+Enfin, une conclusion générale dresse le bilan synthétique de nos réalisations, évalue l'atteinte des objectifs fixés et expose les perspectives d'évolution de nos travaux.
+
+\newpage

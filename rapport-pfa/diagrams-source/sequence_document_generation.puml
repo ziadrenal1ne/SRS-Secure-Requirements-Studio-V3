@@ -1,0 +1,24 @@
+@startuml
+autonumber
+skinparam shadowing false
+
+actor "Analyste / Décideur" as User
+participant "Client Next.js" as Front
+participant "Documents Router\n(FastAPI)" as Router
+participant "DocumentGenerator\nService" as DocGen
+participant "RenderingEngine\n(ReportLab / docx)" as Render
+database "Base de Données\n(PostgreSQL / SQLite)" as DB
+
+User -> Front : Demande l'exportation (ex: PDF)
+Front -> Router : GET /api/v1/projects/{id}/export?format=pdf
+Router -> DocGen : export(project_id, "pdf")
+DocGen -> DB : SELECT kg_nodes, requirements, security_analyses
+DB --> DocGen : Données consolidées du projet
+DocGen -> DocGen : build_content() (assemblage du Cahier des Charges)
+DocGen -> Render : render_pdf(content)
+Render --> DocGen : Flux binaire PDF
+DocGen -> DB : UPSERT INTO generated_documents
+DocGen --> Router : (bytes, "application/pdf", filename)
+Router --> Front : Streaming Response 200 OK
+Front --> User : Téléchargement du fichier Cahier_des_Charges_FOCP_V3.pdf
+@enduml

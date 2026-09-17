@@ -1,4 +1,5 @@
 from pathlib import Path
+import os
 from typing import Literal
 
 from pydantic import BaseModel
@@ -40,6 +41,8 @@ def _from_environment(settings: Settings) -> EffectiveAISettings:
 
 def load_ai_settings() -> EffectiveAISettings:
     current = _from_environment(get_settings())
+    if os.environ.get("AI_PROVIDER", "").lower() == "template":
+        return current
     if not _CONFIG_PATH.exists():
         return current
     try:

@@ -1,0 +1,23 @@
+\chapter*{Conclusion Générale}
+\addcontentsline{toc}{chapter}{Conclusion Générale}
+\markboth{CONCLUSION GÉNÉRALE}{CONCLUSION GÉNÉRALE}
+
+Au terme de ce Projet de Fin d'Année en Ingénierie Informatique et Réseaux, nous avons mené à bien la \textbf{conception d'une plateforme de gestion des bénéficiaires de l'Axe Social et Solidaire au sein de la Fondation OCP en intégrant des exigences de cybersécurité}, à travers la réalisation d'une application logicielle dédiée à l'ingénierie des exigences (\textbf{Secure Requirements Studio -- SRS}) et la concrétisation des spécifications à travers un \textbf{prototype fonctionnel (MVP)}. Face au défi de pilotage d'un réseau national d'environ 1\,700 coopératives partenaires, nous avons démontré les limitations des démarches documentaires manuelles classiques et justifié la pertinence de développer un outil informatique capable d'accompagner, de structurer et d'automatiser ce cadrage.
+
+Tout au long de notre projet, nous avons articulé nos travaux autour d'une architecture logicielle moderne, modulaire et asynchrone associant un backend sous FastAPI (Python 3.12) et un frontend réactif sous Next.js 15 (React 19 et Tailwind CSS v4). Nous avons formalisé une ontologie métier structurant 39 concepts clés interconnectés, implémenté un moteur d'interview à double mode (questionnaire déterministe guidé et entretien intelligent assisté par Google Gemini), et mis en place un moteur de dérivation d'exigences assurant une traçabilité rigoureuse entre les objectifs stratégiques, les rôles métier, les règles de gestion et les critères d'acceptation.
+
+L'intégration native des exigences de cybersécurité dès la phase d'expression des besoins a constitué un pilier fondamental de notre démarche. Grâce à l'automatisation de la modélisation des menaces STRIDE, de l'évaluation quantitative des risques DREAD, de la génération de la matrice des privilèges RBAC et de l'analyse d'impact sur la vie privée (PIA), notre système garantit une approche \textit{Security by Design} de haut niveau. De surcroît, le moteur d'audit qualité, évaluant plus de cent règles de validation, conditionne l'homologation formelle des spécifications avant toute publication.
+
+L'aboutissement opérationnel et concret de cette chaîne logicielle intégrée s'est matérialisé par deux livrables majeurs :
+\begin{enumerate}
+    \item La production réussie du document officiel de référence : {\ttfamily Cahier\allowbreak\_\allowbreak des\allowbreak\_\allowbreak Charges\allowbreak\_\allowbreak FOCP\allowbreak\_\allowbreak V3.pdf}. Ce livrable structuré, complet et hautement qualifié fournit à la Fondation OCP l'ensemble des spécifications fonctionnelles, des règles de gestion des soumissions mensuelles et des contraintes de cybersécurité indispensables pour guider la réalisation finale de sa plateforme.
+    \item La réalisation du \textbf{MVP (Minimum Viable Product)} de la plateforme des bénéficiaires, intégrant treize interfaces fonctionnelles clés (authentification RBAC, tableaux de bord d'impact ESG/ODD, annuaire des coopératives, cartographie interactive nationale, workflow de validation des rapports mensuels, GED et exports multi-formats), apportant la preuve concrète de l'opérabilité des spécifications produites.
+\end{enumerate}
+
+En termes de limitations réelles, notre solution SRS demeure dépendante, en mode IA, de la disponibilité des services cloud de modèles de langage, bien que le mécanisme de repli déterministe local garantisse la continuité de service. Par ailleurs, l'ontologie des 39 concepts est initialement calibrée sur le périmètre spécifique de l'Axe Social et Solidaire.
+
+En matière de perspectives, notre travail pose les bases d'une évolution prometteuse : faire évoluer SRS vers un \textbf{générateur universel de Cahiers des Charges}, capable de s'adapter à divers types de projets informatiques et d'intégrer une assistance avancée par intelligence artificielle pour conduire de bout en bout l'élicitation des besoins, l'audit de sécurité et la synthèse documentaire.
+
+En définitive, ce projet de fin d'année a constitué une expérience académique et professionnelle particulièrement enrichissante, nous permettant de mobiliser l'ensemble des compétences en modélisation UML, en architecture logicielle, en cybersécurité et en développement full-stack acquises au sein de l'École Marocaine des Sciences de l'Ingénieur.
+
+\newpage

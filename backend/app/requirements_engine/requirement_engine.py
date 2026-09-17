@@ -1,250 +1,195 @@
-"""Requirement engine that converts raw business answers into structured ProjectModel
-written in natural, senior Business Analyst French.
-"""
+"""Normalize business answers into a structured ProjectModel without inventing scope."""
 
 from app.requirements_engine.models import ProjectModel
 
+CUSTOM_PREFIX = "custom:"
+COMMENT_PREFIX = "comment:"
+
+
+def _clean_answer(value: str) -> str:
+    return (
+        (value or "")
+        .replace("**", "")
+        .replace(CUSTOM_PREFIX, "")
+        .replace(COMMENT_PREFIX, "Commentaire : ")
+        .strip()
+    )
+
 
 def _split(value: str) -> list[str]:
-    if not value:
+    normalized = _clean_answer(value)
+    if not normalized:
         return []
-    parts = []
-    for chunk in value.replace("|", ",").split(","):
-        cleaned = chunk.strip(" -;\n\t")
-        if cleaned and not cleaned.lower().startswith("autre"):
-            parts.append(cleaned)
-    return parts
+    for separator in ["|", "\n", ";", ","]:
+        normalized = normalized.replace(separator, ",")
+    items: list[str] = []
+    for chunk in normalized.split(","):
+        cleaned = chunk.strip(" -\t.")
+        if cleaned and not cleaned.lower().startswith("autre /"):
+            items.append(cleaned)
+    return items
 
 
-def _clean_text(value: str) -> str:
-    if not value:
-        return ""
-    cleaned = value.strip()
+def _text(value: str) -> str:
+    cleaned = _clean_answer(value)
     if cleaned and not cleaned.endswith((".", "!", "?")):
         cleaned += "."
     return cleaned
 
 
-def _format_list_prose(items: list[str]) -> str:
-    if not items:
+def _join(items: list[str]) -> str:
+    clean = [item for item in items if item]
+    if len(clean) <= 1:
+        return clean[0] if clean else ""
+    if len(clean) == 2:
+        return f"{clean[0]} et {clean[1]}"
+    return ", ".join(clean[:-1]) + f" ainsi que {clean[-1]}"
+
+
+def _yes(value: str) -> bool:
+    lowered = value.lower()
+    return "oui" in lowered or "peut" in lowered
+
+
+def _explicit_detail(value: str) -> str:
+    cleaned = _clean_answer(value)
+    lowered = cleaned.lower().strip()
+    if lowered in {"oui", "non", "peut-etre", "peut-être", "je ne sais pas"}:
         return ""
-    if len(items) == 1:
-        return items[0]
-    if len(items) == 2:
-        return f"{items[0]} et {items[1]}"
-    return ", ".join(items[:-1]) + f" ainsi que {items[-1]}"
+    if lowered.startswith("oui."):
+        return cleaned[4:].strip()
+    if lowered.startswith("oui,"):
+        return cleaned[4:].strip()
+    return cleaned
 
 
 def build_project_model(answers: dict[str, str], fallback_name: str = "Projet") -> ProjectModel:
-    project_name = answers.get("project_name") or fallback_name
-    model = ProjectModel(project_name=project_name, raw_answers=answers)
+    model = ProjectModel(
+        project_name=(_clean_answer(answers.get("project_name", "")) or fallback_name).strip(),
+        raw_answers=answers,
+    )
+    points: list[str] = []
 
-    # 1. Context & Objectives
     model.context = {
-        "objective": _clean_text(answers.get("objective", "")),
-        "problem": _clean_text(answers.get("problem", "")),
-        "current_situation": _clean_text(answers.get("current_situation", "")),
-        "expected_result": _clean_text(answers.get("expected_result", "")),
+        "objective": _text(answers.get("objective", "")),
+        "problem": _text(answers.get("problem", "")),
+        "current_situation": _text(answers.get("current_situation", "")),
+        "expected_result": _text(answers.get("expected_result", "")),
+        "secondary_objectives": [],
     }
-
-    # Track missing critical information for [À VALIDER] markers
-    points_to_validate: list[str] = []
-
     if not model.context["objective"]:
-        points_to_validate.append("L'objectif principal précis de la plateforme reste [À VALIDER].")
+        points.append("L'objectif principal du projet reste à préciser.")
+    if not model.context["problem"]:
+        points.append("La problématique métier reste à préciser.")
 
-    # 2. Users & Roles
     model.users = _split(answers.get("users", ""))
-    if model.users:
-        user_list_str = _format_list_prose(model.users)
-        model.role_requirements.append(
-            f"La plateforme s'adresse principalement aux profil(s) suivant(s) : {user_list_str}."
-        )
-    else:
-        points_to_validate.append("La liste définitive des profils utilisateurs reste [À DÉFINIR].")
+    if not model.users:
+        points.append("Les profils utilisateurs restent à préciser.")
+    if actions := _text(answers.get("user_actions", "")):
+        model.role_requirements.append(f"Actions attendues par profil : {actions}")
 
-    if answers.get("user_actions"):
-        model.role_requirements.append(
-            f"Chaque profil dispose d'habiliations adaptées à son périmètre : {_clean_text(answers['user_actions'])}"
-        )
+    restricted = answers.get("restricted_information", "")
+    restricted_detail = _explicit_detail(restricted)
+    if restricted and "non" not in restricted.lower():
+        model.role_requirements.append("Certaines informations doivent être visibles uniquement par les profils autorisés.")
+        if restricted_detail:
+            model.role_requirements.append(restricted_detail)
 
-    restricted = answers.get("restricted_information", "").lower()
-    if "oui" in restricted or "je ne sais pas" in restricted:
-        model.role_requirements.append(
-            "Le système garantit le cloisonnement des données : chaque utilisateur accède uniquement aux informations autorisées pour son profil."
-        )
-        model.security_needs.append(
-            "Mise en place d'un contrôle d'accès strict par rôle afin d'empêcher toute consultation non autorisée."
-        )
-    elif restricted and "non" not in restricted:
-        model.role_requirements.append(_clean_text(answers["restricted_information"]))
+    features = _split(answers.get("main_features", ""))
+    if features:
+        model.functional_requirements.append(f"Périmètre fonctionnel principal : {_join(features)}.")
+    if view := _text(answers.get("view_information", "")):
+        model.data_requirements.append(f"Informations à consulter : {view}")
+    if edit := _text(answers.get("edit_information", "")):
+        model.data_requirements.append(f"Informations à ajouter ou modifier : {edit}")
 
-    # 3. Functional Requirements
-    main_features = _split(answers.get("main_features", ""))
-    for feature in main_features:
-        model.functional_requirements.append(
-            f"Module de {feature.lower()} permettant la gestion complète du périmètre associé."
+    documents = answers.get("documents", "")
+    doc_detail = _explicit_detail(documents)
+    if _yes(documents) or doc_detail or any("document" in item.lower() for item in features):
+        model.document_requirements.append(
+            _text(doc_detail) if doc_detail else "Dépôt, consultation et téléchargement des documents nécessaires au processus métier."
         )
 
-    if answers.get("view_information"):
-        model.data_requirements.append(
-            f"Les utilisateurs peuvent consulter les données suivantes : {_clean_text(answers['view_information'])}"
-        )
-    if answers.get("edit_information"):
-        model.data_requirements.append(
-            f"Les utilisateurs autorisés peuvent créer et mettre à jour les informations suivantes : {_clean_text(answers['edit_information'])}"
-        )
-
-    docs_ans = answers.get("documents", "").lower()
-    if "oui" in docs_ans or any("document" in f.lower() for f in main_features):
-        doc_details = answers.get("documents", "") if "oui" not in docs_ans else ""
-        if doc_details and len(doc_details) > 5:
-            model.document_requirements.append(
-                f"Gestion documentaire intégrée : dépôt, consultation et suivi des pièces jointes ({doc_details})."
-            )
-        else:
-            model.document_requirements.append(
-                "Gestion documentaire intégrée : stockage sécurisé, consultation et téléchargement des documents associés."
-            )
-
-    search_items = _split(answers.get("search", ""))
-    if search_items:
-        model.search_requirements.append(
-            f"Recherche et filtrage multicritères basés sur : {_format_list_prose(search_items)}."
-        )
-
-    if answers.get("dashboards"):
-        model.dashboard_requirements.append(
-            f"Tableau de bord de pilotage présentant les indicateurs clés suivants : {_clean_text(answers['dashboards'])}"
-        )
-
-    maps_ans = answers.get("maps", "").lower()
-    if "oui" in maps_ans or "peut-être" in maps_ans or any("carte" in f.lower() or "cartographie" in f.lower() for f in main_features):
-        model.map_requirements.append(
-            "Visualisation cartographique interactive permettant de géolocaliser les entités et d'analyser la répartition géographique."
-        )
-
-    reports_ans = answers.get("reports", "").lower()
-    if "oui" in reports_ans or any("rapport" in f.lower() for f in main_features):
-        model.report_requirements.append(
-            "Génération automatique de rapports d'activité synthétiques et détaillés."
-        )
-
-    exports_items = _split(answers.get("exports", ""))
-    if exports_items:
-        model.export_requirements.append(
-            f"Exportation des données et rapports aux formats : {_format_list_prose(exports_items)}."
-        )
-
-    notif_ans = answers.get("notifications", "").lower()
-    if "oui" in notif_ans or "peut-être" in notif_ans or any("notification" in f.lower() for f in main_features):
+    search = _split(answers.get("search", ""))
+    if search:
+        model.search_requirements.append(f"Recherche et filtres par {_join(search)}.")
+    if dashboards := _text(answers.get("dashboards", "")):
+        model.dashboard_requirements.append(f"Tableaux de bord attendus : {dashboards}")
+    if _yes(answers.get("maps", "")) or any("cartograph" in item.lower() for item in features):
+        detail = _explicit_detail(answers.get("maps", ""))
+        model.map_requirements.append(_text(detail) if detail else "Carte ou localisation à prévoir selon les données géographiques mentionnées.")
+    reports = answers.get("reports", "")
+    report_detail = _explicit_detail(reports)
+    if _yes(reports) or report_detail or any("rapport" in item.lower() for item in features):
+        model.report_requirements.append(_text(report_detail) if report_detail else "Rapports métier à générer à partir des données validées.")
+    exports = _split(answers.get("exports", ""))
+    if exports:
+        model.export_requirements.append(f"Exports attendus : {_join(exports)}.")
+    notifications = answers.get("notifications", "")
+    notification_detail = _explicit_detail(notifications)
+    if _yes(notifications) or notification_detail or any("notification" in item.lower() for item in features):
         model.notification_requirements.append(
-            "Système de notifications et d'alertes en temps réel lors des événements clés du workflow."
+            _text(notification_detail) if notification_detail else "Notifications liées aux événements importants du processus."
         )
 
-    # 4. Workflows & Business Rules
-    if answers.get("main_workflow"):
-        model.workflows.append(_clean_text(answers["main_workflow"]))
+    if workflow := _text(answers.get("main_workflow", "")):
+        model.workflows.append(workflow)
+    validation = answers.get("validation", "")
+    validation_detail = _explicit_detail(validation)
+    if _yes(validation):
+        model.validation_rules.append(_text(validation_detail) if validation_detail else "Les informations concernées doivent être vérifiées ou validées avant leur confirmation.")
+    elif "je ne sais" in validation.lower():
+        points.append("Le besoin de validation métier reste à confirmer.")
+    rejection = _split(answers.get("rejection", ""))
+    if rejection:
+        model.rejection_rules.append(f"En cas d'information incorrecte ou rejetée : {_join(rejection)}.")
+    history = answers.get("history", "")
+    if history and "non" not in history.lower():
+        model.history_requirements.append("Historique des modifications à conserver pour les informations concernées.")
 
-    val_ans = answers.get("validation", "").lower()
-    if "oui" in val_ans:
-        model.validation_rules.append(
-            "Circuit de validation préalable : les soumissions de données sont soumises à vérification avant d'être officialisées."
-        )
-    elif "je ne sais pas" in val_ans:
-        points_to_validate.append("La nécessité d'un circuit de validation hiérarchique reste [À VALIDER].")
+    sensitive = _split(answers.get("sensitive_information", ""))
+    if sensitive:
+        model.security_needs.append(f"Informations à protéger particulièrement : {_join(sensitive)}.")
+    if restricted and "non" not in restricted.lower():
+        model.security_needs.append("Accès différencié aux informations selon les rôles métier.")
+    if constraint := _text(answers.get("special_constraints", "")):
+        model.security_needs.append(f"Contraintes confirmées : {constraint}")
+    if not model.security_needs:
+        points.append("Les informations sensibles à protéger restent à préciser.")
 
-    rej_items = _split(answers.get("rejection", ""))
-    if rej_items:
-        model.rejection_rules.append(
-            f"En cas de rejet d'une soumission, la procédure suivante s'applique : {_format_list_prose(rej_items)} avec notification du motif."
-        )
+    for key, label in [
+        ("availability", "Mode de fonctionnement"),
+        ("devices", "Appareils ciblés"),
+        ("languages", "Langues attendues"),
+    ]:
+        values = _split(answers.get(key, ""))
+        if values and "Je ne sais pas" not in values:
+            model.non_functional_requirements.append(f"{label} : {_join(values)}.")
 
-    hist_ans = answers.get("history", "").lower()
-    if "non" not in hist_ans and hist_ans != "":
-        model.history_requirements.append(
-            "Conservation de l'historique complet des modifications et traçabilité des actions utilisateurs (piste d'audit)."
-        )
-
-    # 5. Security & Privacy
-    sens_items = _split(answers.get("sensitive_information", ""))
-    if sens_items:
-        model.security_needs.append(
-            f"Protection renforcée et confidentialité stricte pour : {_format_list_prose(sens_items)}."
-        )
-    else:
-        model.security_needs.append(
-            "Application des règles standards de sécurité : authentification obligatoire et chiffrement des flux."
-        )
-
-    # 6. Non-Functional & Constraints
-    avail = answers.get("availability", "")
-    if avail and "je ne sais pas" not in avail.lower():
-        model.non_functional_requirements.append(
-            f"Mode de fonctionnement et disponibilité : {avail}."
-        )
-
-    dev_items = _split(answers.get("devices", ""))
-    if dev_items:
-        model.non_functional_requirements.append(
-            f"Compatibilité multi-supports : l'application doit être pleinement utilisable sur {_format_list_prose(dev_items)}."
-        )
-
-    lang_items = _split(answers.get("languages", ""))
-    if lang_items:
-        model.non_functional_requirements.append(
-            f"Support multilingue : interface disponible en {_format_list_prose(lang_items)}."
-        )
-
-    # 7. MVP & Priorities
-    model.mvp = _split(answers.get("mvp", ""))
+    model.mvp = [_text(answers.get("mvp", "")).rstrip(".")] if answers.get("mvp") else []
+    model.future_features = [_text(answers.get("future_features", "")).rstrip(".")] if answers.get("future_features") else []
+    if final_notes := _text(answers.get("final_notes", "")):
+        model.constraints.append(final_notes)
     if not model.mvp:
-        if main_features:
-            model.mvp = main_features[:3]
-        else:
-            model.mvp = ["Consultation du tableau de bord", "Gestion des données principales"]
-            points_to_validate.append("Le périmètre exact du MVP reste [À DÉFINIR] avec le responsable métier.")
-
-    model.future_features = _split(answers.get("future_features", ""))
-    model.constraints = _split(answers.get("special_constraints", ""))
-    if answers.get("final_notes"):
-        model.constraints.append(_clean_text(answers["final_notes"]))
+        points.append("Les fonctionnalités indispensables du MVP restent à préciser.")
 
     model.acceptance_criteria = build_acceptance_criteria(model)
-    model.points_to_validate = points_to_validate
+    model.points_to_validate = points
     return model
 
 
 def build_acceptance_criteria(model: ProjectModel) -> list[str]:
-    criteria = []
+    criteria: list[str] = []
     if model.users:
-        criteria.append(
-            "Chaque profil d'utilisateur accède à l'application avec les privilèges strictement définis pour son rôle."
-        )
-    if model.functional_requirements:
-        criteria.append(
-            "L'ensemble des fonctionnalités identifiées comme indispensables (MVP) sont opérationnelles de bout en bout."
-        )
+        criteria.append("Chaque profil utilisateur accède uniquement aux fonctions prévues pour son rôle.")
+    if model.mvp:
+        criteria.append("Les fonctionnalités indispensables de la première version sont utilisables de bout en bout.")
     if model.document_requirements:
-        criteria.append(
-            "Les documents peuvent être déposés, consultés et téléchargés en toute sécurité par les utilisateurs autorisés."
-        )
-    if model.dashboard_requirements:
-        criteria.append(
-            "Le tableau de bord restitue fidèlement les indicateurs clés calculés à partir des données validées."
-        )
+        criteria.append("Les documents demandés peuvent être ajoutés, consultés et exportés par les utilisateurs autorisés.")
     if model.report_requirements or model.export_requirements:
-        criteria.append(
-            "Les rapports et fichiers d'export sont générés correctement dans les formats retenus."
-        )
-    if model.validation_rules or model.rejection_rules:
-        criteria.append(
-            "Le circuit de validation et la gestion des rejets (avec motif) s'exécutent conformément aux règles métier établies."
-        )
+        criteria.append("Les rapports ou exports demandés sont générés à partir des données réellement saisies.")
+    if model.notification_requirements:
+        criteria.append("Les notifications prévues sont déclenchées aux étapes clés du workflow.")
     if model.security_needs:
-        criteria.append(
-            "Les informations sensibles et confidentielles restent protégées et inaccessibles aux tiers non autorisés."
-        )
-    return criteria or [
-        "Le Cahier des Charges est formellement validé par le responsable métier avant le démarrage des développements."
-    ]
+        criteria.append("Les informations déclarées sensibles ne sont accessibles qu'aux profils autorisés.")
+    return criteria or ["Le cahier des charges est validé par le responsable métier avant le lancement du développement."]

@@ -1,0 +1,85 @@
+@startuml
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam monochrome false
+skinparam defaultFontName "Helvetica,Arial,sans-serif"
+skinparam defaultFontSize 12
+
+skinparam rectangle {
+    BackgroundColor #F8FAFC
+    BorderColor #1E7A3D
+    BorderThickness 1.5
+    RoundCorner 10
+}
+
+skinparam usecase {
+    BackgroundColor #FFFFFF
+    BorderColor #1B3A66
+    BorderThickness 1.2
+    ArrowColor #1B3A66
+    FontSize 11
+}
+
+skinparam actor {
+    BackgroundColor #EAF4EC
+    BorderColor #125226
+    BorderThickness 1.2
+}
+
+actor "Ingénieur Exigences\n/ Analyste" as Analyst
+actor "Responsable de Projet\nFondation OCP" as Manager
+actor "Système IA\n(Google Gemini)" as AI <<Système Externe>>
+
+rectangle "Secure Requirements Studio (SRS)" {
+    
+    package "1. Cadrage & Configuration" {
+        usecase "Créer & paramétrer un projet" as UC_Create
+        usecase "Sélectionner le mode d'élicitation" as UC_SelectMode
+    }
+    
+    package "2. Élicitation des Besoins" {
+        usecase "Conduire le questionnaire guidé" as UC_Classic
+        usecase "Conduire l'entretien adaptatif IA" as UC_AI
+    }
+    
+    package "3. Analyse, Traçabilité & Sécurité" {
+        usecase "Explorer le Graphe de Connaissances (KG)" as UC_KG
+        usecase "Consulter & affiner les exigences" as UC_Reqs
+        usecase "Analyser la cybersécurité (STRIDE / RBAC)" as UC_Sec
+    }
+    
+    package "4. Homologation & Restitution Documentaire" {
+        usecase "Exécuter l'audit qualité (+100 règles)" as UC_Audit
+        usecase "Générer & exporter le Cahier des Charges" as UC_Doc
+    }
+}
+
+' Relations Analyste
+Analyst --> UC_Create
+Analyst --> UC_SelectMode
+Analyst --> UC_Classic
+Analyst --> UC_AI
+Analyst --> UC_KG
+Analyst --> UC_Reqs
+Analyst --> UC_Sec
+Analyst --> UC_Audit
+Analyst --> UC_Doc
+
+' Relations Responsable FOCP
+Manager --> UC_Create
+Manager --> UC_KG
+Manager --> UC_Audit
+Manager --> UC_Doc
+
+' Relations IA
+UC_AI ..> AI : <<interagit>>
+
+' Relations inter-cas
+UC_Classic ..> UC_KG : <<alimente>>
+UC_AI ..> UC_KG : <<alimente>>
+UC_KG ..> UC_Reqs : <<dérive>>
+UC_Sec ..> UC_Audit : <<intègre>>
+UC_Doc ..> UC_Audit : <<inclut>>
+
+@enduml

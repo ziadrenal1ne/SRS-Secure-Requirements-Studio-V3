@@ -1,0 +1,20 @@
+@startuml
+start
+:Charger le Graphe de Connaissances;
+if (Mode sélectionné ?) then (Mode IA Gemini)
+  :Formuler question contextuelle adaptative;
+else (Mode Classique)
+  :Sélectionner question dans la banque guidée;
+endif
+
+:Afficher la question & recueillir la réponse;
+:Interpréter la réponse & mettre à jour le nœud KG;
+:Dériver automatiquement les exigences associées;
+
+if (Reste-t-il des concepts incomplets ?) then (Oui)
+  --> :Charger le Graphe de Connaissances;
+else (Non)
+  :Clôturer l'interview & notifier l'analyste;
+  stop
+endif
+@enduml

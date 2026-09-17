@@ -9,7 +9,8 @@ import { ProjectSubNav } from "@/components/project/project-subnav";
 import { QuestionCard, type AnswerValue } from "@/components/wizard/question-card";
 import { Stepper } from "@/components/wizard/stepper";
 import { wizardSteps } from "@/lib/questionnaire";
-import { ApiError, documentsApi, interviewApi, knowledgeGraphApi, type ProjectCompletion } from "@/lib/api";
+import { ApiError, documentsApi, healthApi, interviewApi, knowledgeGraphApi, type ProjectCompletion } from "@/lib/api";
+import { buildLocalDocument, saveLocalAnswers, saveLocalDocument } from "@/lib/local-document";
 import type { WizardQuestion } from "@/lib/types";
 
 export default function ProjectInterviewPage() {
@@ -34,6 +35,9 @@ export default function ProjectInterviewPage() {
   const [stepIndex, setStepIndex] = React.useState(0);
   const [questionIndex, setQuestionIndex] = React.useState(0);
   const [classicAnswer, setClassicAnswer] = React.useState<AnswerValue>(null);
+  const [classicAnswers, setClassicAnswers] = React.useState<Record<string, AnswerValue>>({});
+  const [aiConnection, setAiConnection] = React.useState<"checking" | "connected" | "failed" | null>(requestedMode === "ai" ? "checking" : null);
+  const [backendAvailable, setBackendAvailable] = React.useState(true);
 
   const refreshCompletion = React.useCallback(async () => {
     try {
@@ -47,6 +51,16 @@ export default function ProjectInterviewPage() {
     (async () => {
       setLoading(requestedMode === "ai");
       try {
+        if (requestedMode === "ai") {
+          const ai = await healthApi.checkAi();
+          if (!ai.connected || ai.status === "error" || ai.status === "model_missing") {
+            setAiConnection("failed");
+            setError(`Assistant IA indisponible. Cause : ${ai.error ?? "fournisseur ou modèle inaccessible"}. Vous pouvez continuer avec le questionnaire guidé.`);
+            setMode("classic");
+          } else {
+            setAiConnection("connected");
+          }
+        }
         const session = await interviewApi.start(projectId);
         setTurnsAnswered(session.turns.length);
         setConceptKey(session.pending_concept_key);
@@ -56,7 +70,9 @@ export default function ProjectInterviewPage() {
         if (session.status === "completed") setStatus("completed");
         await refreshCompletion();
       } catch (err) {
-        setError(err instanceof ApiError ? err.message : "Service indisponible.");
+        setAiConnection("failed");
+        setBackendAvailable(false);
+        setError(requestedMode === "ai" ? (err instanceof ApiError ? err.message : "Impossible de contacter le fournisseur sélectionné. Vérifiez la clé API, la connexion réseau ou la configuration.") : null);
         setMode("classic");
       } finally {
         setLoading(false);
@@ -74,18 +90,35 @@ export default function ProjectInterviewPage() {
       try {
         await interviewApi.answer(projectId, answerStr);
       } catch (e) {
-        console.error("Failed to save answer to graph", e);
+        setBackendAvailable(false);
+        if (!(e instanceof ApiError && e.status === 409)) {
+          console.error("Failed to save answer to graph", e);
+        }
       }
     }
 
-    setClassicAnswer(null);
+    const nextAnswers = { ...classicAnswers, [currentStep.questions[questionIndex].id]: classicAnswer };
+    setClassicAnswers(nextAnswers);
+    saveLocalAnswers(projectId, nextAnswers);
     if (!lastQuestion) {
+      const nextQuestion = currentStep.questions[questionIndex + 1];
+      setClassicAnswer(nextAnswers[nextQuestion.id] ?? null);
       setQuestionIndex((current) => current + 1);
     } else if (!lastStep) {
+      const nextStep = wizardSteps[stepIndex + 1];
+      setClassicAnswer(nextAnswers[nextStep.questions[0].id] ?? null);
       setStepIndex((current) => current + 1);
       setQuestionIndex(0);
     } else {
-      await documentsApi.generate(projectId);
+      const localDocument = buildLocalDocument(projectId, nextAnswers);
+      saveLocalDocument(projectId, localDocument);
+      if (backendAvailable) {
+        try {
+          await documentsApi.generate(projectId);
+        } catch {
+          setBackendAvailable(false);
+        }
+      }
       setStatus("completed");
     }
   }
@@ -163,7 +196,7 @@ export default function ProjectInterviewPage() {
     return (
       <Shell projectId={projectId} title={headerTitle} subtitle={currentStep.title}>
         <Stepper steps={wizardSteps} currentStepIndex={stepIndex} progress={progress} />
-        {error && <p className="mt-4 rounded-xl border border-warning/30 bg-warning-soft px-3 py-2 text-sm text-warning">AI provider indisponible: mode questionnaire active.</p>}
+      {requestedMode === "ai" && error && <p className="mt-4 rounded-lg border border-warning/30 bg-warning-soft px-3 py-2 text-sm text-warning">{error}</p>}
         <div className="mt-6">
           <QuestionCard question={currentQuestion} value={classicAnswer} onChange={setClassicAnswer} />
         </div>
@@ -173,10 +206,16 @@ export default function ProjectInterviewPage() {
             variant="secondary"
             disabled={stepIndex === 0 && questionIndex === 0}
             onClick={() => {
-              setClassicAnswer(null);
-              if (questionIndex > 0) setQuestionIndex((current) => current - 1);
-              else {
+              const saved = { ...classicAnswers, [currentQuestion.id]: classicAnswer };
+              setClassicAnswers(saved);
+              if (questionIndex > 0) {
+                const previousQuestion = currentStep.questions[questionIndex - 1];
+                setClassicAnswer(saved[previousQuestion.id] ?? null);
+                setQuestionIndex((current) => current - 1);
+              } else {
                 const previousStep = wizardSteps[stepIndex - 1];
+                const previousQuestion = previousStep.questions[previousStep.questions.length - 1];
+                setClassicAnswer(saved[previousQuestion.id] ?? null);
                 setStepIndex((current) => current - 1);
                 setQuestionIndex(previousStep.questions.length - 1);
               }
@@ -204,6 +243,8 @@ export default function ProjectInterviewPage() {
 
   return (
     <Shell projectId={projectId} title={headerTitle} subtitle={`${Math.min(turnsAnswered + 1, 30)}/30 - ${section ?? "Question metier"}`}>
+      {aiConnection === "checking" && <p className="mb-4 rounded-lg border border-border bg-surface px-3 py-2 text-sm">Assistant IA - Connexion à votre fournisseur IA... Vérification de la connexion et du modèle.</p>}
+      {aiConnection === "connected" && <p className="mb-4 rounded-lg border border-accent/30 bg-accent-soft px-3 py-2 text-sm text-accent">IA connectée. L&apos;entretien peut commencer.</p>}
       {completion && (
         <div className="h-1.5 w-full overflow-hidden rounded-full bg-surface-2">
           <div className="h-full rounded-full bg-accent transition-all duration-500" style={{ width: `${completion.overall_completion}%` }} />
@@ -222,7 +263,7 @@ export default function ProjectInterviewPage() {
             {submitting ? (
               <>
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Analyse de votre reponse...
+                L&apos;IA réfléchit...
               </>
             ) : (
               <>

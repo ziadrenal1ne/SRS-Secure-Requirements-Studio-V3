@@ -7,6 +7,7 @@ import { ArrowLeft, Copy, Download, FileText, Loader2, Pencil, RefreshCw } from 
 import { Button } from "@/components/ui/button";
 import { ProjectSubNav } from "@/components/project/project-subnav";
 import { ApiError, documentsApi, type ExportFormat, type GeneratedDocument } from "@/lib/api";
+import { buildLocalDocument, loadLocalAnswers, loadLocalDocument, saveLocalDocument } from "@/lib/local-document";
 
 const FORMATS: { format: ExportFormat; label: string }[] = [
   { format: "pdf", label: "PDF" },
@@ -39,8 +40,15 @@ export default function DocumentsPage() {
     try {
       setDoc(await documentsApi.get(projectId));
     } catch (err) {
-      if (err instanceof ApiError && err.status === 404) setDoc(null);
-      else setError(err instanceof ApiError ? err.message : "Impossible de charger le document.");
+      const localDocument = loadLocalDocument(projectId);
+      if (localDocument) {
+        setDoc(localDocument);
+      } else if (err instanceof ApiError && err.status === 404) {
+        setDoc(null);
+      } else {
+        setDoc(null);
+        setError(err instanceof ApiError ? err.message : "Impossible de charger le document.");
+      }
     } finally {
       setLoading(false);
     }
@@ -56,7 +64,19 @@ export default function DocumentsPage() {
     try {
       setDoc(await documentsApi.generate(projectId));
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : "La generation a echoue.");
+      const localAnswers = loadLocalAnswers(projectId);
+      if (localAnswers) {
+        const rebuilt = buildLocalDocument(projectId, localAnswers);
+        saveLocalDocument(projectId, rebuilt);
+        setDoc(rebuilt);
+        return;
+      }
+      const localDocument = loadLocalDocument(projectId);
+      if (localDocument) {
+        setDoc(localDocument);
+      } else {
+        setError(err instanceof ApiError ? err.message : "La génération a échoué. Répondez au questionnaire guidé pour créer un document local.");
+      }
     } finally {
       setGenerating(false);
     }
@@ -103,27 +123,24 @@ export default function DocumentsPage() {
       <main className="mx-auto max-w-4xl px-4 py-8 lg:px-0">
         {loading ? (
           <p className="flex items-center gap-2 text-sm text-muted-foreground"><Loader2 className="h-4 w-4 animate-spin" /> Chargement...</p>
-        ) : error ? (
-          <p className="text-sm text-destructive">{error}</p>
         ) : !doc ? (
           <div className="rounded-2xl border border-dashed border-border p-8 text-center">
             <FileText className="mx-auto h-8 w-8 text-muted-foreground" />
-            <p className="mt-3 text-sm text-muted-foreground">Aucun document n&apos;a encore ete genere pour ce projet.</p>
+            {error && <p className="mb-3 text-sm text-destructive">{error}</p>}
+            <p className="mt-3 text-sm text-muted-foreground">Aucun document n&apos;a encore été généré pour ce projet.</p>
             <Button className="mt-4" onClick={handleGenerate} disabled={generating}>Generer le cahier des charges</Button>
           </div>
         ) : (
           <div className="flex flex-col gap-6">
-            <section className="rounded-2xl border border-border bg-surface p-5">
-              <p className="font-display text-lg font-semibold">Cahier des Charges - {projectInfo?.name}</p>
-              <p className="mt-2 text-sm text-muted-foreground">{cdc?.summary}</p>
-              <div className="mt-4 flex flex-wrap gap-2 text-xs">
-                <span className="rounded-md bg-accent-soft px-2 py-1 text-accent">Completude : {cdc?.completeness_score ?? "N/A"}%</span>
-                <span className="rounded-md bg-surface-2 px-2 py-1 text-muted-foreground">{cdc?.points_to_confirm?.length ?? 0} point(s) a confirmer</span>
-              </div>
+            <section className="border-b border-border bg-surface px-6 py-7">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Cahier des Charges</p>
+              <h1 className="mt-2 font-display text-2xl font-semibold tracking-tight">Cahier des Charges - {projectInfo?.name}</h1>
+              <p className="mt-1 text-xs text-muted-foreground">Version 1.0 · Document de cadrage fonctionnel</p>
+              <p className="mt-5 max-w-3xl text-sm leading-7 text-foreground/85">{cdc?.summary}</p>
             </section>
 
             {cdc?.points_to_confirm?.length ? (
-              <section className="rounded-2xl border border-border bg-surface p-5">
+              <section className="border border-border bg-surface p-5">
                 <h2 className="font-display text-base font-semibold">Points a confirmer</h2>
                 <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-muted-foreground">
                   {cdc.points_to_confirm.map((point) => <li key={point}>{point}</li>)}
@@ -131,19 +148,18 @@ export default function DocumentsPage() {
               </section>
             ) : null}
 
-            <section className="rounded-2xl border border-border bg-surface p-5">
-              <h2 className="font-display text-base font-semibold">Contenu complet</h2>
-              <div className="mt-4 space-y-4 text-sm">
+            <article className="border border-border bg-surface px-6 py-7">
+              <div className="space-y-6 text-sm">
                 {cdc?.sections?.map((section) => (
                   <section key={section.title}>
-                    <h3 className="font-semibold">{section.title}</h3>
-                    <ul className="mt-2 list-disc space-y-1 pl-5 text-muted-foreground">
-                      {section.items.map((item) => <li key={item}>{item}</li>)}
-                    </ul>
+                    <h2 className="font-display text-base font-semibold text-foreground">{section.title}</h2>
+                    <div className="mt-2 space-y-2 leading-7 text-foreground/85">
+                      {section.items.map((item) => <p key={item}>{item}</p>)}
+                    </div>
                   </section>
                 ))}
               </div>
-            </section>
+            </article>
 
             <section>
               <h2 className="font-display text-base font-semibold">Actions</h2>

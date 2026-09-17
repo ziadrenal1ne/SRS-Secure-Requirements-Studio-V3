@@ -6,10 +6,7 @@ import { cn } from "@/lib/utils";
 
 const TABS = [
   { segment: "interview", label: "Entretien" },
-  { segment: "requirements", label: "Exigences" },
-  { segment: "security", label: "Sécurité" },
-  { segment: "documents", label: "Documents" },
-  { segment: "review", label: "Revue" },
+  { segment: "documents", label: "Cahier des Charges" },
 ];
 
 export function ProjectSubNav({ projectId }: { projectId: string }) {

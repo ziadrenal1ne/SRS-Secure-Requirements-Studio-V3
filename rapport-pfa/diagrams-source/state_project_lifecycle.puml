@@ -1,0 +1,54 @@
+@startuml
+skinparam state {
+    BackgroundColor #FFFFFF
+    BorderColor #1B3A66
+    BorderThickness 1.5
+    StartColor #1E7A3D
+    EndColor #125226
+    FontName "Helvetica,Arial,sans-serif"
+    FontSize 12
+    AttributeFontSize 10
+    ArrowColor #1B3A66
+    ArrowThickness 1.2
+}
+skinparam shadowing false
+
+[*] --> Brouillon : Création du projet\n(Ontologie initialisée)
+
+state Brouillon {
+    Brouillon : - Métadonnées enregistrées
+    Brouillon : - Complétude = 0%
+    Brouillon : - Mode d'élicitation sélectionné
+}
+
+Brouillon --> EnCours : Démarrage de l'interview\n(Guidée ou Assistée IA)
+
+state EnCours {
+    EnCours : - Saisie des réponses
+    EnCours : - Enrichissement dynamique du KG
+    EnCours : - Dérivation automatique des exigences
+}
+
+EnCours --> EnCours : Enregistrement d'un tour &\nactualisation des concepts
+
+EnCours --> EnRevue : Interview complétée\n(Seuil de complétude atteint)
+
+state EnRevue {
+    EnRevue : - Évaluation des +100 règles d'audit
+    EnRevue : - Modélisation STRIDE / DREAD
+    EnRevue : - Calcul du score d'homologation
+}
+
+EnRevue --> EnCours : Lacunes ou règles échouées\n[Score global < 95%]
+
+EnRevue --> Valide : Audit qualité réussi\n[Score global >= 95%]
+
+state Valide {
+    Valide : - Spécifications homologuées
+    Valide : - Matrice de traçabilité complète
+    Valide : - Prêt pour l'exportation
+}
+
+Valide --> [*] : Génération & Exportation finale\n(Cahier_des_Charges_FOCP_V3.pdf)
+
+@enduml

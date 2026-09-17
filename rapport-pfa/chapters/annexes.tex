@@ -1,0 +1,108 @@
+\chapter*{Annexes}
+\addcontentsline{toc}{chapter}{Annexes}
+\markboth{ANNEXES}{ANNEXES}
+
+\section*{Annexe A : Catalogue des concepts ontologiques du Knowledge Graph}
+
+Le tableau \ref{tab:annexe_concepts} présente un extrait représentatif de l'ontologie des 39 concepts interconnectés structurés dans le module \texttt{concept\_catalog.py} de notre studio.
+
+\begin{table}[H]
+\centering
+\caption{Extrait de l'ontologie des concepts du Knowledge Graph}
+\label{tab:annexe_concepts}
+\begin{tabularx}{\textwidth}{|l|l|l|X|}
+\hline
+\rowcolor{focpgreen!18}
+\textbf{Clé du Concept} & \textbf{Domaine} & \textbf{Importance} & \textbf{Description Métier} \\
+\hline
+\texttt{business.objective} & business & Critique & Objectif métier central et raison d'être du système. \\
+\hline
+\texttt{business.success\_metrics} & business & Haute & Indicateurs clés de performance et cibles chiffrées. \\
+\hline
+\texttt{users.primary\_personas} & users & Critique & Profils utilisateurs principaux et segmentation des accès. \\
+\hline
+\texttt{beneficiaries.categories} & beneficiaries & Critique & Répartition des bénéficiaires (femmes, jeunes, handicap). \\
+\hline
+\texttt{entities.core\_objects} & entities & Critique & Entités de gestion centrales (coopératives, conventions). \\
+\hline
+\texttt{security.auth\_method} & security & Critique & Mécanisme d'authentification et gestion des sessions. \\
+\hline
+\texttt{security.data\_class} & security & Haute & Classification des données (sensibles, publiques, restreintes). \\
+\hline
+\texttt{deployment.target\_env} & deployment & Haute & Environnement cible et topologie d'infrastructure. \\
+\hline
+\texttt{monitoring.kpis} & monitoring & Moyenne & Métriques d'exploitation et tableaux de bord décisionnels. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section*{Annexe B : Règles d'audit du Moteur de Revue Qualité}
+
+Le Moteur de Revue Qualité évalue plus de 100 règles dérivées de 90 gabarits de vérification, résumés dans le tableau \ref{tab:annexe_rules}.
+
+\begin{table}[H]
+\centering
+\caption{Catégories des règles de validation du Moteur d'Audit}
+\label{tab:annexe_rules}
+\begin{tabularx}{\textwidth}{|l|c|X|}
+\hline
+\rowcolor{focpgreen!18}
+\textbf{Famille de Règles} & \textbf{Nombre} & \textbf{Critères de Validation et d'Homologation} \\
+\hline
+Complétude conceptuelle & 39 & Vérifie que chaque concept a atteint un seuil de complétude $\ge 75\%$. \\
+\hline
+Confiance ontologique & 39 & Évalue que l'indice de confiance des données capturées est $\ge 70\%$. \\
+\hline
+Couverture des domaines & 15 & S'assure de la complétude minimale des 15 domaines clés du projet. \\
+\hline
+Présence des types d'exigences & 11 & Contrôle l'existence d'exigences BRD, FRD, NFR et sécurité. \\
+\hline
+Contrôles de cybersécurité & 8 & Vérifie l'application effective des contrôles essentiels (RBAC, TLS, journalisation, chiffrement). \\
+\hline
+Cohérence structurelle & 11 & Valide les relations croisées, l'absence de noeuds orphelins et les critères d'acceptation. \\
+\hline
+\end{tabularx}
+\end{table}
+
+\section*{Annexe C : Extrait de configuration Docker Compose}
+
+\begin{lstlisting}[language=bash, caption={Configuration Docker Compose multi-services}, label={lst:docker_compose}]
+name: srs-platform
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: srs
+      POSTGRES_PASSWORD: srs
+      POSTGRES_DB: srs
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_URL: postgresql+asyncpg://srs:srs@db:5432/srs
+      REDIS_URL: redis://redis:6379/0
+      AI_PROVIDER: gemini
+    depends_on:
+      - db
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    environment:
+      NEXT_PUBLIC_API_BASE_URL: http://localhost:8000/api/v1
+    depends_on:
+      - backend
+    ports:
+      - "3000:3000"
+\end{lstlisting}
+
+\newpage

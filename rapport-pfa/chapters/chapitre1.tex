@@ -1,0 +1,107 @@
+\chapter{Présentation du cadre de projet}
+\markboth{CHAPITRE 1. PRÉSENTATION DU CADRE DE PROJET}{CHAPITRE 1. PRÉSENTATION DU CADRE DE PROJET}
+
+\section{Introduction}
+
+Ce premier chapitre a pour objectif de situer le projet dans son contexte institutionnel, métier et technologique. Nous y présentons l'organisme d'accueil, à savoir la Fondation OCP et son Axe Social et Solidaire, avant de mener une étude approfondie de l'existant portant sur la gestion des bénéficiaires et les mécanismes traditionnels d'ingénierie des exigences. Nous explicitons ensuite les limitations et les risques inhérents à la rédaction manuelle des spécifications, justifiant ainsi notre décision de concevoir et de développer une application logicielle dédiée (\textbf{Secure Requirements Studio -- SRS}) pour formaliser les exigences et générer le Cahier des Charges adapté à cette future plateforme. Enfin, nous détaillons la démarche méthodologique agile adoptée ainsi que le planning prévisionnel de notre réalisation.
+
+\section{Présentation de la société d'accueil}
+
+La \textbf{Fondation OCP}, reconnue d'utilité publique, constitue une institution centrale de l'engagement sociétal et durable du Groupe OCP au Maroc et sur le continent africain. Elle déploie des programmes structurants dans les domaines du développement humain, de l'éducation, de la recherche appliquée et de l'autonomisation des communautés rurales.
+
+Au sein de la Fondation, l'\textbf{Axe Social et Solidaire} anime et accompagne un réseau national d'envergure regroupant environ 1\,700 coopératives marocaines et leurs bénéficiaires directs et indirects (femmes artisanes et agricultrices, jeunes porteurs de projets, personnes en situation de handicap, petits exploitants agricoles). Ce réseau couvre l'ensemble des douze régions du Royaume et génère un flux continu d'activités de formation, de conventions de partenariat, de déclarations statistiques et d'indicateurs de développement durable.
+
+La gouvernance et le pilotage des systèmes d'information sont conduits en étroite synergie avec la \textbf{Direction de la Transformation Digitale (DTD)}, dont la mission est d'introduire des solutions logicielles innovantes pour moderniser les processus métier, fiabiliser la collecte des données de terrain, dématérialiser les flux de validation et garantir la sécurité et la confidentialité des données institutionnelles.
+
+\section{Étude de l'existant}
+
+\subsection{Description de l'existant}
+
+Le suivi opérationnel et stratégique du réseau de coopératives et des bénéficiaires de l'Axe Social et Solidaire repose historiquement sur des flux de travail décentralisés et hétérogènes :
+\begin{itemize}
+    \item Les informations relatives aux coopératives (identité, dirigeants, localisation régionale et provinciale, statut administratif, conventions) sont disséminées entre plusieurs fichiers bureautiques locaux, échanges d'e-mails et documents papier.
+    \item La consolidation mensuelle des bénéficiaires directs et indirects ainsi que le suivi des activités s'effectuent manuellement, ce qui entraîne des retards de consolidation, des difficultés d'auditabilité et des risques de doublons.
+    \item Les indicateurs d'impact environnemental, social et de gouvernance (ESG) et les Objectifs de Développement Durable (ODD) ne bénéficient pas d'un système de centralisation unifié en temps réel.
+\end{itemize}
+
+Face à cette situation, la Fondation OCP a identifié la nécessité impérative de la \textbf{conception d'une plateforme de gestion des bénéficiaires de l'Axe Social et Solidaire en intégrant des exigences de cybersécurité}. Pour préparer le développement d'un tel système, la démarche traditionnelle consistait à mener des réunions d'ateliers suivies d'une rédaction documentaire manuelle sous traitement de texte.
+
+\subsection{Critique de l'existant}
+
+L'analyse critique des processus documentaires manuels met en lumière des limites majeures :
+\begin{enumerate}
+    \item \textbf{Complexité et risque élevé d'omissions} : La formalisation d'un système multi-acteurs (1\,700 coopératives indépendantes et administrateurs centraux) comporte de multiples dimensions (règles métier, workflows de validation mensuelle, cartographie, indicateurs ESG). La rédaction manuelle omet fréquemment des contrôles de sécurité essentiels ou des critères d'acceptation précis.
+    \item \textbf{Traitement tardif de la cybersécurité} : Dans les approches documentaires classiques, les exigences de cybersécurité (authentification robuste, contrôle d'accès RBAC, chiffrement, journalisation, conformité de protection des données personnelles) sont souvent reléguées au second plan ou traitées a posteriori, augmentant la vulnérabilité de la conception initiale.
+    \item \textbf{Absence de traçabilité dynamique} : Dans un document statique, il est complexe de maintenir la correspondance entre un objectif métier, une entité de données, un écran d'interface et une exigence de sécurité. Toute modification en amont implique une révision manuelle laborieuse et source d'incohérences.
+\end{enumerate}
+
+\subsection{Solution proposée}
+
+Pour surmonter ces difficultés, nous avons articulé notre démarche autour de trois volets complémentaires :
+
+\subsubsection{La solution métier cible}
+La \textbf{conception d'une plateforme de gestion des bénéficiaires de l'Axe Social et Solidaire au sein de la Fondation OCP en intégrant des exigences de cybersécurité}. Ce système cible a pour vocation de centraliser les profils des coopératives, de digitaliser les circuits de soumission et de validation mensuelle, de cartographier le réseau national, de piloter les indicateurs ESG/ODD et d'assurer une traçabilité intégrale sous un niveau de protection élevé.
+
+\subsubsection{La solution informatique développée pendant le PFA (SRS)}
+Au lieu de nous borner à rédiger manuellement un cahier des charges statique, \textbf{nous avons conçu et développé Secure Requirements Studio (SRS), une application logicielle dédiée permettant de structurer, guider et automatiser la formalisation des exigences et la production du Cahier des Charges adapté à cette future plateforme}.
+
+Notre application logicielle SRS s'appuie sur :
+\begin{itemize}
+    \item Un \textbf{graphe de connaissances ontologique} structurant 39 concepts clés du domaine (bénéficiaires, entités, sécurité, déploiement, indicateurs).
+    \item Un \textbf{moteur d'interview interactif} proposant un parcours guidé déterministe ou une assistance contextuelle par IA pour éliciter les besoins sans omission.
+    \item Un \textbf{moteur d'analyse de cybersécurité} intégrant nativement la modélisation des menaces (STRIDE/DREAD), la matrice des privilèges (RBAC) et l'évaluation d'impact sur la vie privée (PIA).
+    \item Un \textbf{moteur d'audit qualité} évaluant plus de 100 règles de validation structurelles et conditionnant l'homologation des spécifications.
+    \item Un \textbf{pipeline de génération documentaire} assemblant et exportant le document officiel de référence : \texttt{Cahier\_des\_Charges\_FOCP\_V3.pdf}.
+\end{itemize}
+
+\subsubsection{La validation par prototype fonctionnel (MVP)}
+Pour concrétiser les exigences formulées et prouver la faisabilité technique de la plateforme cible, nous avons développé le \textbf{MVP (Minimum Viable Product)} de la plateforme des bénéficiaires, implémentant les modules majeurs spécifiés dans le Cahier des Charges.
+
+\section{Choix du modèle de développement}
+
+Pour mener à bien la conception et la réalisation de nos solutions, nous avons retenu une méthodologie \textbf{Agile inspirée du cadre Scrum et du cycle itératif et incrémental}.
+
+Ce choix méthodologique se justifie par :
+\begin{itemize}
+    \item La nécessité d'itérer rapidement sur les composants logiciels (moteurs de règles, interfaces d'interview, pipeline de rendu documentaire) en validant en continu les livrables intermédiaires.
+    \item Le découplage modulaire entre le backend FastAPI, la couche de persistance asynchrone et le frontend Next.js 15.
+    \item La capacité d'ajuster les règles d'audit et la structure ontologique au fur et à mesure des retours sur la qualité du cahier des charges généré.
+    \item L'enchaînement fluide entre la génération des spécifications et l'implémentation du prototype MVP.
+\end{itemize}
+
+\needspace{16\baselineskip}
+\section{Planning prévisionnel}
+
+Le tableau \ref{tab:planning} récapitule le planning prévisionnel et l'ordonnancement des différentes étapes de notre projet de fin d'année.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Planning prévisionnel des phases du projet}
+\label{tab:planning}
+\begin{tabularx}{\textwidth}{|p{3.8cm}|X|p{2.8cm}|}
+\hline
+\rowcolor{focpgreen!18}
+\textbf{Phase} & \textbf{Activités et Livrables Clés} & \textbf{Période / Durée} \\
+\hline
+\textbf{Phase 1 : Cadrage \& Analyse} & Étude de l'existant, analyse du contexte FOCP, définition des objectifs et modélisation de l'ontologie des 39 concepts. & Semaines 1 à 2 \\
+\hline
+\textbf{Phase 2 : Conception Système} & Modélisation UML (Cas d'utilisation, Séquences, Classes, États), conception de la base relationnelle et de l'architecture logicielle. & Semaines 3 à 4 \\
+\hline
+\textbf{Phase 3 : Réalisation Backend SRS} & Développement des API FastAPI, implémentation des moteurs de Knowledge Graph, d'Interview, d'Exigences et de Sécurité (STRIDE/DREAD). & Semaines 5 à 6 \\
+\hline
+\textbf{Phase 4 : Réalisation Frontend SRS} & Implémentation du frontend Next.js 15, tableaux de bord, assistant d'interview et pipeline de génération documentaire multi-format. & Semaines 7 à 8 \\
+\hline
+\textbf{Phase 5 : Audit \& Cahier des Charges} & Validation du moteur de revue (+100 règles), tests d'audit et génération du livrable officiel \texttt{Cahier\_des\_Charges\_FOCP\_V3.pdf}. & Semaines 9 à 10 \\
+\hline
+\textbf{Phase 6 : Développement MVP \& Rapport} & Développement du prototype MVP de gestion des bénéficiaires, validation des interfaces et finalisation du rapport PFA. & Semaines 11 à 12 \\
+\hline
+\end{tabularx}
+\end{table}
+
+\needspace{8\baselineskip}
+\section{Conclusion}
+
+Ce chapitre a permis de présenter le cadre institutionnel de la Fondation OCP et de l'Axe Social et Solidaire. L'analyse de l'existant a mis en évidence la nécessité de disposer d'une plateforme de gestion des bénéficiaires sécurisée et a justifié notre démarche innovante consistant à concevoir l'application logicielle SRS pour structurer et générer son cahier des charges officiel, complétée par la réalisation d'un MVP fonctionnel. Le chapitre suivant est consacré à la spécification formelle des besoins fonctionnels, non fonctionnels et de cybersécurité ainsi qu'à la modélisation des cas d'utilisation de notre système.
+
+\newpage

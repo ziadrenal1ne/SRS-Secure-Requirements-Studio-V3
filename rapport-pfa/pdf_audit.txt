@@ -1,0 +1,367 @@
+=== Page 01 (Physical), Count lines: 23 ===
+=== Page 02 (Physical), Count lines: 24 ===
+  [HEADING/FLOAT] DÉDICACES
+=== Page 03 (Physical), Count lines: 27 ===
+  [HEADING/FLOAT] REMERCIEMENTS
+=== Page 04 (Physical), Count lines: 31 ===
+=== Page 05 (Physical), Count lines: 30 ===
+=== Page 06 (Physical), Count lines: 70 ===
+  [HEADING/FLOAT] Table des matières
+  [HEADING/FLOAT] Liste des Abréviations
+  [HEADING/FLOAT] Introduction Générale
+  [HEADING/FLOAT] 1.1
+  [HEADING/FLOAT] Introduction . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+  [HEADING/FLOAT] 1.2
+  [HEADING/FLOAT] 1.3
+  [HEADING/FLOAT] 1.3.1
+  [HEADING/FLOAT] 1.3.2
+  [HEADING/FLOAT] 1.3.3
+  [HEADING/FLOAT] 1.4
+  [HEADING/FLOAT] 1.5
+  [HEADING/FLOAT] 1.6
+  [HEADING/FLOAT] Conclusion
+  [HEADING/FLOAT] 2.1
+  [HEADING/FLOAT] Introduction . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+  [HEADING/FLOAT] 2.2
+  [HEADING/FLOAT] 2.2.1
+  [HEADING/FLOAT] 2.2.2
+  [HEADING/FLOAT] 2.3
+  [HEADING/FLOAT] 2.4
+  [HEADING/FLOAT] 2.4.1
+=== Page 07 (Physical), Count lines: 97 ===
+  [HEADING/FLOAT] 2.4.2
+  [HEADING/FLOAT] 2.5
+  [HEADING/FLOAT] 2.5.1
+  [HEADING/FLOAT] 2.5.2
+  [HEADING/FLOAT] 2.5.3
+  [HEADING/FLOAT] 2.6
+  [HEADING/FLOAT] Conclusion
+  [HEADING/FLOAT] 3.1
+  [HEADING/FLOAT] Introduction . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+  [HEADING/FLOAT] 3.2
+  [HEADING/FLOAT] 3.2.1
+  [HEADING/FLOAT] 3.2.2
+  [HEADING/FLOAT] 3.2.3
+  [HEADING/FLOAT] 3.2.4
+  [HEADING/FLOAT] 3.3
+  [HEADING/FLOAT] 3.3.1
+  [HEADING/FLOAT] 3.3.2
+  [HEADING/FLOAT] 3.3.3
+  [HEADING/FLOAT] 3.3.4
+  [HEADING/FLOAT] 3.4
+  [HEADING/FLOAT] Conclusion
+  [HEADING/FLOAT] 4.1
+  [HEADING/FLOAT] Introduction . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+  [HEADING/FLOAT] 4.2
+  [HEADING/FLOAT] 4.2.1
+  [HEADING/FLOAT] 4.2.2
+  [HEADING/FLOAT] 4.3
+  [HEADING/FLOAT] 4.3.1
+  [HEADING/FLOAT] 4.3.2
+  [HEADING/FLOAT] 4.3.3
+  [HEADING/FLOAT] Tableau de bord principal de pilotage des projets
+=== Page 08 (Physical), Count lines: 90 ===
+  [HEADING/FLOAT] 4.3.4
+  [HEADING/FLOAT] 4.3.5
+  [HEADING/FLOAT] 4.3.6
+  [HEADING/FLOAT] 4.3.7
+  [HEADING/FLOAT] 4.4
+  [HEADING/FLOAT] 4.5
+  [HEADING/FLOAT] Conclusion
+  [HEADING/FLOAT] 5.1
+  [HEADING/FLOAT] Introduction . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . . .
+  [HEADING/FLOAT] 5.2
+  [HEADING/FLOAT] 5.3
+  [HEADING/FLOAT] 5.4
+  [HEADING/FLOAT] 5.4.1
+  [HEADING/FLOAT] 5.4.2
+  [HEADING/FLOAT] Tableau de bord général de pilotage de l’Axe Social et Solidaire
+  [HEADING/FLOAT] 5.4.3
+  [HEADING/FLOAT] 5.4.4
+  [HEADING/FLOAT] 5.4.5
+  [HEADING/FLOAT] 5.4.6
+  [HEADING/FLOAT] 5.4.7
+  [HEADING/FLOAT] 5.4.8
+  [HEADING/FLOAT] 5.4.9
+  [HEADING/FLOAT] 5.4.10 Tableau de bord analytique avancé (Parité, ESG et ODD) . . . . . . . .
+  [HEADING/FLOAT] 5.4.11 Module d’exportation multi-format des données consolidées . . . . . .
+  [HEADING/FLOAT] 5.4.12 Centre de notiﬁcations et alertes de soumission
+  [HEADING/FLOAT] 5.4.13 Paramètres de conﬁguration et préférences du proﬁl . . . . . . . . . . .
+  [HEADING/FLOAT] 5.5
+  [HEADING/FLOAT] 5.6
+  [HEADING/FLOAT] Conclusion
+  [HEADING/FLOAT] Conclusion Générale
+=== Page 09 (Physical), Count lines: 6 ===
+  [HEADING/FLOAT] Annexes
+=== Page 10 (Physical), Count lines: 77 ===
+  [HEADING/FLOAT] Table des ﬁgures
+  [HEADING/FLOAT] 2.1
+  [HEADING/FLOAT] 3.1
+  [HEADING/FLOAT] 3.2
+  [HEADING/FLOAT] 3.3
+  [HEADING/FLOAT] 3.4
+  [HEADING/FLOAT] 3.5
+  [HEADING/FLOAT] 3.6
+  [HEADING/FLOAT] 3.7
+  [HEADING/FLOAT] 3.8
+  [HEADING/FLOAT] 4.1
+  [HEADING/FLOAT] 4.2
+  [HEADING/FLOAT] 4.3
+  [HEADING/FLOAT] Tableau de bord de supervision et de pilotage des projets de spéciﬁcation . . . .
+  [HEADING/FLOAT] 4.4
+  [HEADING/FLOAT] 4.5
+  [HEADING/FLOAT] 4.6
+  [HEADING/FLOAT] 4.7
+  [HEADING/FLOAT] 5.1
+  [HEADING/FLOAT] 5.2
+  [HEADING/FLOAT] Tableau de bord général de supervision et indicateurs d’impact . . . . . . . . .
+  [HEADING/FLOAT] 5.3
+  [HEADING/FLOAT] 5.4
+  [HEADING/FLOAT] 5.5
+  [HEADING/FLOAT] 5.6
+  [HEADING/FLOAT] 5.7
+=== Page 11 (Physical), Count lines: 20 ===
+  [HEADING/FLOAT] 5.8
+  [HEADING/FLOAT] 5.9
+  [HEADING/FLOAT] 5.10 Tableau de bord analytique avancé : parité de genre, impact ESG et ODD
+  [HEADING/FLOAT] 5.11 Interface d’exportation multi-format des données et synthèses d’impact . . . . .
+  [HEADING/FLOAT] 5.12 Centre de notiﬁcations, alertes d’échéances et suivi événementiel . . . . . . . .
+  [HEADING/FLOAT] 5.13 Interface des paramètres du proﬁl utilisateur et options de sécurité
+=== Page 12 (Physical), Count lines: 29 ===
+  [HEADING/FLOAT] Liste des tableaux
+  [HEADING/FLOAT] 1.1
+  [HEADING/FLOAT] 2.1
+  [HEADING/FLOAT] 2.2
+  [HEADING/FLOAT] 2.3
+  [HEADING/FLOAT] 3.1
+  [HEADING/FLOAT] 5.1
+  [HEADING/FLOAT] 5.2
+  [HEADING/FLOAT] 5.3
+=== Page 13 (Physical), Count lines: 110 ===
+  [HEADING/FLOAT] Liste des Abréviations
+=== Page 14 (Physical), Count lines: 35 ===
+  [HEADING/FLOAT] Introduction Générale
+  [HEADING/FLOAT] 1. Le système cible : La plateforme de gestion des bénéﬁciaires de l’Axe Social et Solidaire
+=== Page 15 (Physical), Count lines: 37 ===
+  [HEADING/FLOAT] 2. L’application logicielle développée (SRS) : Secure Requirements Studio (SRS), le
+  [HEADING/FLOAT] 3. Le prototype fonctionnel (MVP) : Le Minimum Viable Product de la plateforme de
+=== Page 16 (Physical), Count lines: 30 ===
+  [HEADING/FLOAT] CHAPITRE 1
+  [HEADING/FLOAT] 1.1 Introduction
+  [HEADING/FLOAT] 1.2 Présentation de la société d’accueil
+=== Page 17 (Physical), Count lines: 37 ===
+  [HEADING/FLOAT] CHAPITRE 1. PRÉSENTATION DU CADRE DE PROJET
+  [HEADING/FLOAT] 1.3 Étude de l’existant
+  [HEADING/FLOAT] 1.3.1 Description de l’existant
+  [HEADING/FLOAT] 1.3.2 Critique de l’existant
+  [HEADING/FLOAT] 1. Complexité et risque élevé d’omissions : La formalisation d’un système multi-acteurs
+  [HEADING/FLOAT] 2. Traitement tardif de la cybersécurité : Dans les approches documentaires classiques,
+  [HEADING/FLOAT] 3. Absence de traçabilité dynamique : Dans un document statique, il est complexe de
+=== Page 18 (Physical), Count lines: 32 ===
+  [HEADING/FLOAT] CHAPITRE 1. PRÉSENTATION DU CADRE DE PROJET
+  [HEADING/FLOAT] 1.3.3 Solution proposée
+  [HEADING/FLOAT] 1.3.3.1 La solution métier cible
+  [HEADING/FLOAT] 1.3.3.2 La solution informatique développée pendant le PFA (SRS)
+=== Page 19 (Physical), Count lines: 21 ===
+  [HEADING/FLOAT] CHAPITRE 1. PRÉSENTATION DU CADRE DE PROJET
+  [HEADING/FLOAT] 1.3.3.3 La validation par prototype fonctionnel (MVP)
+  [HEADING/FLOAT] 1.4 Choix du modèle de développement
+=== Page 20 (Physical), Count lines: 7 ===
+  [HEADING/FLOAT] CHAPITRE 1. PRÉSENTATION DU CADRE DE PROJET
+  [HEADING/FLOAT] 1.5 Planning prévisionnel
+=== Page 21 (Physical), Count lines: 76 ===
+  [HEADING/FLOAT] CHAPITRE 1. PRÉSENTATION DU CADRE DE PROJET
+=== Page 22 (Physical), Count lines: 12 ===
+  [HEADING/FLOAT] CHAPITRE 1. PRÉSENTATION DU CADRE DE PROJET
+  [HEADING/FLOAT] 1.6 Conclusion
+=== Page 23 (Physical), Count lines: 27 ===
+  [HEADING/FLOAT] CHAPITRE 2
+  [HEADING/FLOAT] 2.1 Introduction
+  [HEADING/FLOAT] 2.2 Spéciﬁcation des besoins fonctionnels
+  [HEADING/FLOAT] 2.2.1 Besoins de la plateforme cible (Gestion des Bénéﬁciaires)
+  [HEADING/FLOAT] 1. Gestion des coopératives : Centralisation des proﬁls administratifs, des statuts juri-
+  [HEADING/FLOAT] 2. Gestion et déclaration des bénéﬁciaires : Recensement rigoureux des bénéﬁciaires di-
+  [HEADING/FLOAT] 3. Circuit mensuel de soumission et de validation : Dématérialisation du workﬂow où
+=== Page 24 (Physical), Count lines: 33 ===
+  [HEADING/FLOAT] CHAPITRE 2. SPÉCIFICATION DES BESOINS
+  [HEADING/FLOAT] 4. Cartographie interactive nationale : Géolocalisation des coopératives sur une carte in-
+  [HEADING/FLOAT] 5. Pilotage des indicateurs ESG et ODD : Consolidation des activités associées aux Ob-
+  [HEADING/FLOAT] 2.2.2 Besoins fonctionnels de l’application logicielle développée (SRS)
+  [HEADING/FLOAT] 2.2.2.1 Gestion des projets et du graphe de connaissances ontologique
+  [HEADING/FLOAT] 2.2.2.2 Moteur d’interview adaptative et capture des besoins
+  [HEADING/FLOAT] 2.2.2.3 Moteur d’exigences et matrice de traçabilité
+  [HEADING/FLOAT] 2.2.2.4 Moteur de génération et d’exportation multi-format
+=== Page 25 (Physical), Count lines: 34 ===
+  [HEADING/FLOAT] CHAPITRE 2. SPÉCIFICATION DES BESOINS
+  [HEADING/FLOAT] 2.3 Spéciﬁcation des besoins non fonctionnels
+  [HEADING/FLOAT] 2.4 Intégration des exigences de cybersécurité
+  [HEADING/FLOAT] 2.4.1 Exigences de sécurité de la plateforme cible
+=== Page 26 (Physical), Count lines: 36 ===
+  [HEADING/FLOAT] CHAPITRE 2. SPÉCIFICATION DES BESOINS
+  [HEADING/FLOAT] 2.4.2 Exigences et fonctionnalités de sécurité de l’application développée
+  [HEADING/FLOAT] 2.5 Présentation des cas d’utilisation
+  [HEADING/FLOAT] 2.5.1 Présentation des acteurs
+=== Page 27 (Physical), Count lines: 40 ===
+  [HEADING/FLOAT] CHAPITRE 2. SPÉCIFICATION DES BESOINS
+  [HEADING/FLOAT] 2.5.2 Description des cas d’utilisation
+  [HEADING/FLOAT] 1. L’analyste accède au module d’interview du projet.
+  [HEADING/FLOAT] 2. Le système présente la question courante et son contexte ontolo-
+  [HEADING/FLOAT] 3. L’analyste renseigne la réponse (choix guidé ou texte libre).
+  [HEADING/FLOAT] 4. Le moteur interprète la réponse et met à jour le noeud conceptuel
+  [HEADING/FLOAT] 5. Le système dérive automatiquement les exigences fonctionnelles
+=== Page 28 (Physical), Count lines: 30 ===
+  [HEADING/FLOAT] CHAPITRE 2. SPÉCIFICATION DES BESOINS
+  [HEADING/FLOAT] 1. L’analyste accède à l’espace de cybersécurité et d’audit du projet.
+  [HEADING/FLOAT] 2. Le moteur de sécurité analyse les ﬂux et données sensibles et gé-
+  [HEADING/FLOAT] 3. Le moteur d’audit exécute le banc de plus de 100 règles de vali-
+  [HEADING/FLOAT] 4. L’interface afﬁche les sous-scores (complétude, conﬁance, sécu-
+  [HEADING/FLOAT] 5. Si le score global est sufﬁsant, le projet est homologué pour l’ex-
+=== Page 29 (Physical), Count lines: 49 ===
+  [HEADING/FLOAT] CHAPITRE 2. SPÉCIFICATION DES BESOINS
+  [HEADING/FLOAT] 2.5.3 Diagramme global des cas d’utilisation
+  [HEADING/FLOAT] 1. Cadrage & Conﬁguration
+  [HEADING/FLOAT] 2. Élicitation des Besoins
+  [HEADING/FLOAT] 3. Analyse, Traçabilité & Sécurité
+  [HEADING/FLOAT] 4. Homologation & Restitution
+  [HEADING/FLOAT] 2.6 Conclusion
+=== Page 30 (Physical), Count lines: 26 ===
+  [HEADING/FLOAT] CHAPITRE 3
+  [HEADING/FLOAT] 3.1 Introduction
+  [HEADING/FLOAT] 3.2 Modélisation dynamique
+  [HEADING/FLOAT] 3.2.1 Diagrammes de séquences
+  [HEADING/FLOAT] 3.2.1.1 Déroulement d’un tour d’interview et dérivation d’exigences
+=== Page 31 (Physical), Count lines: 49 ===
+  [HEADING/FLOAT] CHAPITRE 3. CONCEPTION DU SYSTÈME
+  [HEADING/FLOAT] 3.2.1.2 Génération et assemblage du document de spéciﬁcation
+  [HEADING/FLOAT] 3.2.2 Diagrammes de collaboration
+=== Page 32 (Physical), Count lines: 44 ===
+  [HEADING/FLOAT] CHAPITRE 3. CONCEPTION DU SYSTÈME
+  [HEADING/FLOAT] 3.2.3 Diagrammes d’états et d’état-transition
+=== Page 33 (Physical), Count lines: 29 ===
+  [HEADING/FLOAT] CHAPITRE 3. CONCEPTION DU SYSTÈME
+  [HEADING/FLOAT] 3.2.4 Diagrammes d’activité
+  [HEADING/FLOAT] 3.3 Modélisation statique
+  [HEADING/FLOAT] 3.3.1 Diagramme de classes du domaine
+=== Page 34 (Physical), Count lines: 118 ===
+  [HEADING/FLOAT] CHAPITRE 3. CONCEPTION DU SYSTÈME
+  [HEADING/FLOAT] 3.3.2 Modèle relationnel
+  [HEADING/FLOAT] 1. Chaque entité devient une table relationnelle dotée d’une clé primaire UUID non prédic-
+  [HEADING/FLOAT] 2. Les relations de composition 1 →N (ex. : Project →Requirements) se traduisent
+  [HEADING/FLOAT] 3. Les relations 1 →1 (ex. : Project →SecurityAnalysis, GeneratedDocument) sont
+  [HEADING/FLOAT] 4. Les structures semi-dynamiques (matrices RBAC, règles de validation) sont encapsulées
+=== Page 35 (Physical), Count lines: 27 ===
+  [HEADING/FLOAT] CHAPITRE 3. CONCEPTION DU SYSTÈME
+  [HEADING/FLOAT] 3.3.3 Dictionnaire de données
+=== Page 36 (Physical), Count lines: 324 ===
+  [HEADING/FLOAT] CHAPITRE 3. CONCEPTION DU SYSTÈME
+  [HEADING/FLOAT] Liste des menaces STRIDE
+  [HEADING/FLOAT] 3.3.4 Architecture de l’application
+  [HEADING/FLOAT] 3.3.4.1 Architecture logicielle (Diagramme de composants)
+=== Page 37 (Physical), Count lines: 78 ===
+  [HEADING/FLOAT] CHAPITRE 3. CONCEPTION DU SYSTÈME
+  [HEADING/FLOAT] 1. Couche Présentation (Next.js 15 App Router / React 19 / Tailwind v4)
+  [HEADING/FLOAT] 2. Couche Exposition API & Validation (FastAPI / Pydantic v2)
+  [HEADING/FLOAT] 3. Couche Métier & Moteurs Spécialisés (Python 3.12)
+  [HEADING/FLOAT] 4. Couche Données & Persistance (SQLAlchemy 2.0 Async)
+  [HEADING/FLOAT] 3.3.4.2 Architecture matérielle (Diagramme de déploiement)
+  [HEADING/FLOAT] 3.4 Conclusion
+=== Page 38 (Physical), Count lines: 25 ===
+  [HEADING/FLOAT] CHAPITRE 4
+  [HEADING/FLOAT] 4.1 Introduction
+  [HEADING/FLOAT] 4.2 Environnement de développement
+  [HEADING/FLOAT] 4.2.1 Environnement matériel
+  [HEADING/FLOAT] 4.2.2 Environnement logiciel
+=== Page 39 (Physical), Count lines: 33 ===
+  [HEADING/FLOAT] CHAPITRE 4. RÉALISATION DU SYSTÈME (SRS)
+  [HEADING/FLOAT] 4.3 Principales interfaces graphiques de l’application SRS
+  [HEADING/FLOAT] 4.3.1 Accueil et sélection du mode de création
+=== Page 40 (Physical), Count lines: 12 ===
+  [HEADING/FLOAT] CHAPITRE 4. RÉALISATION DU SYSTÈME (SRS)
+  [HEADING/FLOAT] 4.3.2 Formulaire d’initialisation d’un nouveau projet
+=== Page 41 (Physical), Count lines: 17 ===
+  [HEADING/FLOAT] CHAPITRE 4. RÉALISATION DU SYSTÈME (SRS)
+  [HEADING/FLOAT] 4.3.3 Tableau de bord principal de pilotage des projets
+  [HEADING/FLOAT] 4.3.4 Paramètres et conﬁguration des fournisseurs d’intelligence artiﬁcielle
+=== Page 42 (Physical), Count lines: 12 ===
+  [HEADING/FLOAT] CHAPITRE 4. RÉALISATION DU SYSTÈME (SRS)
+  [HEADING/FLOAT] 4.3.5 Questionnaire guidé par étapes d’élicitation
+=== Page 43 (Physical), Count lines: 16 ===
+  [HEADING/FLOAT] CHAPITRE 4. RÉALISATION DU SYSTÈME (SRS)
+  [HEADING/FLOAT] 4.3.6 Prévisualisation du Cahier des Charges généré
+  [HEADING/FLOAT] 4.3.7 Résumé et analyse de maturité du projet
+=== Page 44 (Physical), Count lines: 25 ===
+  [HEADING/FLOAT] CHAPITRE 4. RÉALISATION DU SYSTÈME (SRS)
+  [HEADING/FLOAT] 4.4 Analyse du livrable ﬁnal : Cahier_des_Charges_FOCP_V3.pdf
+  [HEADING/FLOAT] 1. Contexte et problématique : Déﬁnition du réseau de 1 700 coopératives et justiﬁcation
+  [HEADING/FLOAT] 2. Objectifs de la plateforme : 12 objectifs stratégiques (centralisation, reporting mensuel,
+  [HEADING/FLOAT] 3. Utilisateurs et permissions (RBAC) : Déﬁnition stricte des rôles Administrateur Fonda-
+  [HEADING/FLOAT] 4. Données gérées : Structuration des données des coopératives, bénéﬁciaires directs et in-
+  [HEADING/FLOAT] 5. Workﬂow mensuel de soumission et validation : Circuit digitalisé de saisie, soumission,
+=== Page 45 (Physical), Count lines: 23 ===
+  [HEADING/FLOAT] CHAPITRE 4. RÉALISATION DU SYSTÈME (SRS)
+  [HEADING/FLOAT] 4.5 Conclusion
+=== Page 46 (Physical), Count lines: 27 ===
+  [HEADING/FLOAT] CHAPITRE 5
+  [HEADING/FLOAT] 5.1 Introduction
+  [HEADING/FLOAT] 5.2 Objectifs et périmètre du MVP
+=== Page 47 (Physical), Count lines: 32 ===
+  [HEADING/FLOAT] CHAPITRE 5. RÉALISATION DU MVP DE LA PLATEFORME
+  [HEADING/FLOAT] 5.3 Architecture fonctionnelle du MVP
+  [HEADING/FLOAT] 1. Module d’Authentiﬁcation et Sécurité RBAC : Gestion des sessions sécurisées, contrôle
+  [HEADING/FLOAT] 2. Module Tableau de Bord Décisionnel : Agrégation temps réel des KPI d’impact, distri-
+  [HEADING/FLOAT] 3. Module Annuaire des Coopératives : Fiches détaillées, contacts, statut juridique, ﬁlière
+  [HEADING/FLOAT] 4. Module Cartographie Interactive (SIG) : Visualisation cartographique dynamique avec
+  [HEADING/FLOAT] 5. Module Déclarations & Rapports Mensuels : Saisie structurée, calcul automatique des
+  [HEADING/FLOAT] 5.4 Principales interfaces graphiques du prototype MVP
+=== Page 48 (Physical), Count lines: 20 ===
+  [HEADING/FLOAT] CHAPITRE 5. RÉALISATION DU MVP DE LA PLATEFORME
+  [HEADING/FLOAT] 5.4.1 Accueil et authentiﬁcation sécurisée (RBAC)
+  [HEADING/FLOAT] 5.4.2 Tableau de bord général de pilotage de l’Axe Social et Solidaire
+=== Page 49 (Physical), Count lines: 12 ===
+  [HEADING/FLOAT] CHAPITRE 5. RÉALISATION DU MVP DE LA PLATEFORME
+  [HEADING/FLOAT] 5.4.3 Annuaire et gestion des coopératives partenaires
+=== Page 50 (Physical), Count lines: 15 ===
+  [HEADING/FLOAT] CHAPITRE 5. RÉALISATION DU MVP DE LA PLATEFORME
+  [HEADING/FLOAT] 5.4.4 Cartographie interactive nationale des coopératives
+  [HEADING/FLOAT] 5.4.5 Suivi et circuit de validation des rapports d’activité mensuels
+=== Page 51 (Physical), Count lines: 13 ===
+  [HEADING/FLOAT] CHAPITRE 5. RÉALISATION DU MVP DE LA PLATEFORME
+  [HEADING/FLOAT] 5.4.6 Suivi des conventions de partenariat et gestion budgétaire
+=== Page 52 (Physical), Count lines: 14 ===
+  [HEADING/FLOAT] CHAPITRE 5. RÉALISATION DU MVP DE LA PLATEFORME
+  [HEADING/FLOAT] 5.4.7 Gestion électronique de documents (GED) et pièces justiﬁcatives
+  [HEADING/FLOAT] 5.4.8 Importation massive des données de coopératives par ﬁchier CSV
+=== Page 53 (Physical), Count lines: 13 ===
+  [HEADING/FLOAT] CHAPITRE 5. RÉALISATION DU MVP DE LA PLATEFORME
+  [HEADING/FLOAT] 5.4.9 Moteur de recherche multicritère avancée et ﬁltrage dynamique
+=== Page 54 (Physical), Count lines: 14 ===
+  [HEADING/FLOAT] CHAPITRE 5. RÉALISATION DU MVP DE LA PLATEFORME
+  [HEADING/FLOAT] 5.4.10 Tableau de bord analytique avancé (Parité, ESG et ODD)
+  [HEADING/FLOAT] 5.4.11 Module d’exportation multi-format des données consolidées
+=== Page 55 (Physical), Count lines: 13 ===
+  [HEADING/FLOAT] CHAPITRE 5. RÉALISATION DU MVP DE LA PLATEFORME
+  [HEADING/FLOAT] 5.4.12 Centre de notiﬁcations et alertes de soumission
+  [HEADING/FLOAT] 5.4.13 Paramètres de conﬁguration et préférences du proﬁl
+=== Page 56 (Physical), Count lines: 6 ===
+  [HEADING/FLOAT] CHAPITRE 5. RÉALISATION DU MVP DE LA PLATEFORME
+=== Page 57 (Physical), Count lines: 8 ===
+  [HEADING/FLOAT] CHAPITRE 5. RÉALISATION DU MVP DE LA PLATEFORME
+  [HEADING/FLOAT] 5.5 Synthèse et validation par rapport au Cahier des Charges
+=== Page 58 (Physical), Count lines: 90 ===
+  [HEADING/FLOAT] CHAPITRE 5. RÉALISATION DU MVP DE LA PLATEFORME
+=== Page 59 (Physical), Count lines: 13 ===
+  [HEADING/FLOAT] CHAPITRE 5. RÉALISATION DU MVP DE LA PLATEFORME
+  [HEADING/FLOAT] 5.6 Conclusion
+=== Page 60 (Physical), Count lines: 35 ===
+  [HEADING/FLOAT] Conclusion Générale
+  [HEADING/FLOAT] 1. La production réussie du document ofﬁciel de référence : Cahier_des_Charges_FOCP_V3.pdf.
+  [HEADING/FLOAT] 2. La réalisation du MVP (Minimum Viable Product) de la plateforme des bénéﬁciaires,
+=== Page 61 (Physical), Count lines: 20 ===
+=== Page 62 (Physical), Count lines: 21 ===
+=== Page 63 (Physical), Count lines: 64 ===
+  [HEADING/FLOAT] Annexes
+  [HEADING/FLOAT] Annexe A : Catalogue des concepts ontologiques du Know-
+  [HEADING/FLOAT] Annexe B : Règles d’audit du Moteur de Revue Qualité
+=== Page 64 (Physical), Count lines: 71 ===
+  [HEADING/FLOAT] Annexe C : Extrait de conﬁguration Docker Compose
+=== Page 65 (Physical), Count lines: 39 ===

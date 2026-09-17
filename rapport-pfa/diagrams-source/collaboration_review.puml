@@ -1,0 +1,18 @@
+@startuml
+skinparam objectStyle uml2
+skinparam shadowing false
+
+object "<u>:ReviewRouter</u>" as Router
+object "<u>:ReviewEngineService</u>" as Service
+object "<u>:KGNodeRepository</u>" as KGRepo
+object "<u>:RequirementRepository</u>" as ReqRepo
+object "<u>:SecurityRepository</u>" as SecRepo
+object "<u>:ReviewRunRepository</u>" as RunRepo
+
+Router -> Service : 1: run_review(project_id)
+Service -> KGRepo : 2: list_for_project()
+Service -> ReqRepo : 3: list_for_project()
+Service -> SecRepo : 4: get_for_project()
+Service -> Service : 5: execute_rules(+100)
+Service -> RunRepo : 6: save(review_run)
+@enduml

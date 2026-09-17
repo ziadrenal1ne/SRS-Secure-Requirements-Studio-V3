@@ -166,14 +166,14 @@ def render_business_markdown(content: dict) -> str:
     org_str = p.get("organization") or "Organisation Client"
 
     lines = [
-        f"# Cahier des Charges — {p['name']}",
+        f"# Cahier des charges - {p['name']}",
         "",
-        f"**Organisation :** {org_str}  ",
-        f"**Date :** {date_str} | **Statut :** {p.get('status', 'Brouillon')} | **Complétude :** {cdc['completeness_score']}%",
+        f"**Version :** 1.0  ",
+        f"**Généré le :** {date_str} | **Statut :** {p.get('status', 'Brouillon')} | **Complétude :** {cdc['completeness_score']}%",
         "",
         "---",
         "",
-        "## RÉSUMÉ ÉXÉCUTIF",
+        "## Résumé",
         "",
         cdc["summary"],
         "",
@@ -182,17 +182,28 @@ def render_business_markdown(content: dict) -> str:
     for section in cdc["sections"]:
         lines += [f"## {section['title']}", ""]
         for item in section["items"]:
-            if item.startswith("•") or item.startswith("-"):
+            if item.startswith("-"):
                 lines.append(item)
             else:
-                lines.append(f"• {item}")
+                lines.append(f"- {item}")
         lines.append("")
 
     if cdc.get("points_to_confirm"):
-        lines += ["## POINTS À VALIDER", ""]
+        lines += ["## Points à valider", ""]
         for point in cdc["points_to_confirm"]:
             lines.append(f"- [ ] {point}")
         lines.append("")
+
+    if content.get("requirements_by_type"):
+        lines += ["## Exigences détaillées", ""]
+        for reqs in content["requirements_by_type"].values():
+            for requirement in reqs:
+                lines.append(f"- **{requirement['requirement_key']}** - {requirement['title']}")
+        lines.append("")
+
+    diagram = content.get("diagrams", {}).get("mvp_diagram_mermaid", "")
+    if diagram:
+        lines += ["## Diagramme MVP", "", "```mermaid", diagram, "```", ""]
 
     return "\n".join(lines)
 
@@ -263,11 +274,11 @@ def render_business_docx(content: dict) -> bytes:
     cdc = content["cahier_des_charges"]
     date_str = content.get("generated_at", "")[:10]
 
-    doc.add_heading(f"Cahier des Charges — {p['name']}", level=0)
+    doc.add_heading(f"Cahier des Charges - {p['name']}", level=0)
     meta_p = doc.add_paragraph()
-    meta_p.add_run(f"Organisation : {p.get('organization') or 'Client'} | Date : {date_str} | Complétude : {cdc['completeness_score']}%").italic = True
+    meta_p.add_run(f"Version 1.0 | Généré le : {date_str} | Complétude : {cdc['completeness_score']}%").italic = True
 
-    doc.add_heading("Résumé Exécutif", level=1)
+    doc.add_heading("Résumé", level=1)
     doc.add_paragraph(cdc["summary"])
 
     for section in cdc["sections"]:
@@ -277,9 +288,18 @@ def render_business_docx(content: dict) -> bytes:
             doc.add_paragraph(clean_item, style="List Bullet")
 
     if cdc.get("points_to_confirm"):
-        doc.add_heading("Points à Valider", level=1)
+        doc.add_heading("Points à valider", level=1)
         for point in cdc["points_to_confirm"]:
             doc.add_paragraph(point, style="List Bullet")
+
+    if content.get("requirements_by_type"):
+        doc.add_heading("Exigences détaillées", level=1)
+        for reqs in content["requirements_by_type"].values():
+            for requirement in reqs:
+                doc.add_paragraph(
+                    f"{requirement['requirement_key']} - {requirement['title']}",
+                    style="List Bullet",
+                )
 
     style = doc.styles["Normal"]
     style.font.size = Pt(10.5)
@@ -410,13 +430,11 @@ def render_business_pdf(content: dict) -> bytes:
     p = content["project"]
     cdc = content["cahier_des_charges"]
     date_str = content.get("generated_at", "")[:10]
-    org_str = p.get("organization") or "Organisation Client"
-
     story = [
-        Paragraph(f"Cahier des Charges — {p['name']}", doc_title),
-        Paragraph(f"<b>Organisation :</b> {org_str} &nbsp;|&nbsp; <b>Date :</b> {date_str} &nbsp;|&nbsp; <b>Complétude :</b> {cdc['completeness_score']}%", meta_style),
+        Paragraph(f"Cahier des Charges - {p['name']}", doc_title),
+        Paragraph(f"<b>Version :</b> 1.0 &nbsp;|&nbsp; <b>Généré le :</b> {date_str} &nbsp;|&nbsp; <b>Complétude :</b> {cdc['completeness_score']}%", meta_style),
         Spacer(1, 4),
-        Paragraph("RÉSUMÉ ÉXÉCUTIF", h1),
+        Paragraph("Résumé", h1),
         Paragraph(cdc["summary"] or "Cadrage fonctionnel du projet.", body),
         Spacer(1, 6),
     ]
@@ -429,10 +447,9 @@ def render_business_pdf(content: dict) -> bytes:
         story.append(Spacer(1, 4))
 
     if cdc.get("points_to_confirm"):
-        story.append(Paragraph("POINTS À VALIDER", h1))
+        story.append(Paragraph("Points à valider", h1))
         for point in cdc["points_to_confirm"]:
-            story.append(Paragraph(f"⚠️ {point}", confirm_style))
+            story.append(Paragraph(point, confirm_style))
 
     doc.build(story)
     return buf.getvalue()
-
