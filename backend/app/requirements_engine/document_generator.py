@@ -111,13 +111,17 @@ def _business_rules(model: ProjectModel) -> list[str]:
     rules = []
     idx = 1
     if model.users:
-        rules.append(f"RB-{idx:03d} — Un utilisateur ne peut accéder qu'aux fonctions correspondant à son profil."); idx += 1
+        rules.append(f"RB-{idx:03d} — Un utilisateur ne peut accéder qu'aux fonctions correspondant à son profil.")
+        idx += 1
     if model.security_needs:
-        rules.append(f"RB-{idx:03d} — Les informations identifiées comme sensibles sont réservées aux profils autorisés."); idx += 1
+        rules.append(f"RB-{idx:03d} — Les informations identifiées comme sensibles sont réservées aux profils autorisés.")
+        idx += 1
     if model.validation_rules:
-        rules.append(f"RB-{idx:03d} — Une information soumise à validation ne devient effective qu'après décision du profil habilité."); idx += 1
+        rules.append(f"RB-{idx:03d} — Une information soumise à validation ne devient effective qu'après décision du profil habilité.")
+        idx += 1
     if model.rejection_rules:
-        rules.append(f"RB-{idx:03d} — Tout rejet doit permettre la correction ou le traitement prévu par la règle métier confirmée."); idx += 1
+        rules.append(f"RB-{idx:03d} — Tout rejet doit permettre la correction ou le traitement prévu par la règle métier confirmée.")
+        idx += 1
     if model.history_requirements:
         rules.append(f"RB-{idx:03d} — Les modifications importantes doivent rester traçables dans l'historique.")
     return rules or ["RB-001 — Les règles métier détaillées restent [À PRÉCISER]."]
