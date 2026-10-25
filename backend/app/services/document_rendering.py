@@ -163,12 +163,11 @@ def render_business_markdown(content: dict) -> str:
     p = content["project"]
     cdc = content["cahier_des_charges"]
     date_str = content.get("generated_at", "")[:10]
-    org_str = p.get("organization") or "Organisation Client"
 
     lines = [
         f"# Cahier des charges - {p['name']}",
         "",
-        f"**Version :** 1.0  ",
+        "**Version :** 1.0  ",
         f"**Généré le :** {date_str} | **Statut :** {p.get('status', 'Brouillon')} | **Complétude :** {cdc['completeness_score']}%",
         "",
         "---",
